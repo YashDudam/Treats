@@ -1,0 +1,38 @@
+image: comp1531/basic:latest
+
+stages:
+  - checks
+
+before_script:
+  - npm install
+
+cache:
+  paths:
+    - node_modules
+
+tests with coverage:
+  stage: checks
+  script:
+    - SERVER_LOG=$(mktemp)
+    - npm run ts-node-coverage >& $SERVER_LOG &
+    - sleep 3
+    - npm t || (cat $SERVER_LOG && exit 1)
+    - kill -SIGINT %1
+    - sleep 2
+    - cat $SERVER_LOG
+  coverage: '/All files\s*\|\s*(\d+(?:\.\d+)?)/'
+  artifacts:
+    paths:
+      - coverage/
+    expose_as: Coverage Report
+    expire_in: 1 week
+
+typecheck:
+  stage: checks
+  script:
+    - npm run tsc
+
+linting:
+  stage: checks
+  script:
+    - npm run lint

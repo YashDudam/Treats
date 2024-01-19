@@ -1,0 +1,167 @@
+9/6/2022 12:30
+Meeting minutes:
+    went over merge requests to ensure it was all there
+    Style guide sorted:
+        before each function, put parameters and what it returns
+        label the functions that we indivually do with our names/zID
+        variable names: important variables to be clear. Counters to be i or j
+        Indentation: 4 spaces
+    Approval for merge requests: Must have two other teammates approve before submitting the merge request
+    Need to do:
+        fill in data.md : two arrays, one for people one for channels
+        We can then sort by userID;
+        James and Yash is filling in the data.md then merging it
+
+
+
+Time and date: 12:30pm 16/06/2022
+
+Location: Bench outside Quad G025
+
+Minutes written by: Leon Kapaniris
+
+Attendees:
+    Leon Kapaniris
+    James White
+    Yash Dudam
+    Eugene Lee
+    Srihari Jayaraman
+
+Agenda:
+Iteration 0 submission reflection:
+    Recieved feedback in person by tutor. Will recieve a written copy tomorrow 17/07/2022
+    Reflected on how we could improve
+
+New business: Iteration 1 released:
+    Read over the iteration so we can have an understanding of the iteration
+        Discussed the order of the assignment. This must be completed in this order
+        1) Creating assumptions (complete by Sunday night)
+        2) Creating black box texts (complete by Sunday night)
+        3) Fill in the functions (complete by Tuesday or attempt before)
+        Assigned the various functions to individuals
+            James: authLoginV1, authRegisterV1
+            Leon: channelInviteV1, userProfile
+            Yash: channelMessagesV1, clearV1
+            Eugene: channelsCreateV1, channelsListV1, channelsListallV1
+            Srihari: channelJoinV1, channelDetailsV1 
+
+Next meeting scheduled for 21/06/2022 at 7:30pm
+
+To be Discussed for next meeting: (Leonidas Kapaniris 20/06/2022)
+    The 'DM' and message aspect of the assignment. Do we need to have a data segment allocated to it?
+    or another part of the user? Maybe even another data store labelled messageStore
+    The variables that the userData and channelData must have (id, name, members, etc)
+    npm tests. individually running? any issues with package.json across the board?
+    Should we have a branch dedicated to running the tests such as a channel implementation branch
+
+
+Meeting started: 8/08pm 21/06
+Attendees: 
+    Leon Kapaniris
+    James White
+    Yash Dudam
+    Eugene Lee
+    Srihari Jayaraman
+Location: Microsoft Teams
+
+DM not supposed to be in it: A couple forum posts about it. Yash is currently working on it. Leave the actual message outside
+Talk to a tutor about bad assumption 1
+Add a message aspect to the channel. Array of objects {userId & string}
+Yash for any message parts
+The permissions is being handled by Srihari and Eugene respectivily
+
+Data to be grabbed by the functions? For each testing, recrate users and channels
+
+Creating a new branch for testing 
+    If a member needs another funtion to work and so forth, wait until the final test is sent to the master, the pull master the master, test and so on
+
+
+5/07/2022 started at 6.00pm and went for 20 minutes
+
+attendees:
+James,
+Eugene,
+Leon, 
+Yash,
+Srihari 
+We decided that we would all contribute to converting files to typescript. 
+Until our next meeting we will do this and also start writing tests. 
+We will each choose 6 functions and declare them on the issues board.
+
+
+7/07/2022 started at 7.00pm and went for an hour
+
+attendees:
+Eugene,
+Leon, 
+Yash,
+Srihari 
+
+We assigned ourselves to the functions and tests we will be doing. We did the assignment in teams.
+We also decided that we would create a new array in dataStore to hold tokens. 
+From here we need to work on our functions and make some functions that will generate and handle tokens.
+
+
+12/07/2022 started at 7.00pm and went for 40 minutes
+
+attendees:
+Eugene,
+Leon, 
+Yash,
+Srihari,
+James
+
+We figured out which functions still need to be completed and assigned people to do them. 
+We made a schedule for the rest of the week so we get everything done. 
+We aim to complete the HTTP functions by Thursday night and use Friday to fix any errors and get everything to work.
+
+
+13/07/2022 started at 2.40pm and went for 35 minutes
+
+attendees:
+Eugene,
+Leon, 
+Yash,
+Srihari,
+James
+
+We finished everything to do with typescript and merged it into master. 
+Now we can start implementing our functions and tests for the server.
+
+
+14/07/2022 started at 12.30pm and went for 30 minutes
+
+attendees:
+Leon, 
+Eugene,
+Yash,
+James
+
+We did some collaborative error checking to get through some tricky problems.
+
+
+15/07/2022 started at 1.00pm and went for 45 minutes
+
+attendees:
+Leon, 
+Eugene,
+Yash,
+James
+
+We figured out what still needs doing including errors, tests and functions. 
+We will be implementing these things up until the due time
+
+
+02/08/2022 started at 8:15pm and went for 25 minutes
+
+attendees:
+Yash,
+Srihari
+
+We discussed our progress and split up the remaining it3 tasks:
+- Modifying dataStore to accommodate stats
+- Fixing coverage
+- Implementing standup features in it2 functions
+- Hashing and updating the method to create ids
+- Documentation - elicitation and use cases
+the rest of the group accordingly.

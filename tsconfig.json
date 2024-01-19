@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+      "esModuleInterop": true,
+      "noImplicitAny": false,
+      "noEmit": true,
+      "resolveJsonModule": true,
+  },
+  "exclude": [
+    "**/**_broken.ts",
+    "src/test/auth.test.ts"
+
+  ]
+}
