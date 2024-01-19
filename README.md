@@ -1,6 +1,15 @@
 # COMP1531 Major Project
 
-**✨ 🍫  UNSW Treats 🍬 ✨**
+**✨ 🍫 UNSW Treats 🍬 ✨**
+
+I took Software Engineering Fundamentals (COMP1531) back in 2022 term 2 and we did relatively well in this project. We learnt
+a lot about the software development lifecycle and best practices for working in a team. We learnt about git, used a high level
+programming language for the first time, and we were introduced to what software development looks like in the real world. We
+were excited but as the project grew and new requirements were added, the codebase became a difficult beast to tame. We were
+learning the importance of clean and maintainable code the hard way. So in the end we were left with a messy project that worked
+well enough but was difficult to read and understand. Looking back though we had only been coding for 3 months so it made sense
+that there's a lot to improve on. Now, two years later, I'm going to use this codebase as an exercise in refactoring. I'm going
+to apply the knowledge I've gained throughout my degree and see if I can salvage this project into something functioning.
 
 ## Contents
 
@@ -31,7 +40,7 @@ If we want to make a Candy Crush competitor, we're going to have to remake Teams
 
 The 22T2 cohort of COMP1531 students will build the **backend Javascript server** for a new communication platform, **UNSW Treats** (or just **Treats** for short). I plan to task future COMP6080 students to build the frontend for Treats, something you won't have to worry about.
 
-**UNSW Treats** is the questionably-named communication tool that allows you to share, communicate, and collaborate virtually *without* intervention from Microsoft spies.
+**UNSW Treats** is the questionably-named communication tool that allows you to share, communicate, and collaborate virtually _without_ intervention from Microsoft spies.
 
 I have already specified a **common interface** for the frontend and backend to operate on. This allows both courses to go off and do their own development and testing under the assumption that both parties will comply with the common interface. This is the interface **you are required to use**.
 
@@ -67,46 +76,47 @@ In this iteration, you are expected to:
 
 2. Implement and test the HTTP Express server according to the entire interface provided in the specification, including features that were added in iteration 3.
 
-    * Part of this section will be automarked.
+   - Part of this section will be automarked.
 
-    * It is required that your data is persistent, just like in iteration 2.
+   - It is required that your data is persistent, just like in iteration 2.
 
-    * `eslint` is assessed identically to iteration 2.
+   - `eslint` is assessed identically to iteration 2.
 
-    * Good coverage for all .ts files that aren't tests will be assessed: see section 5.4 for details.
+   - Good coverage for all .ts files that aren't tests will be assessed: see section 5.4 for details.
 
-    * You can structure your test files however you choose, as long as they are appended with `.test.ts`. You may place them inside a `/tests` folder, if you wish. For this iteration, we will only be testing your HTTP layer of tests. 
+   - You can structure your test files however you choose, as long as they are appended with `.test.ts`. You may place them inside a `/tests` folder, if you wish. For this iteration, we will only be testing your HTTP layer of tests.
 
-    * In iteration 2 and 3, we provide a frontend that can be powered by your backend: see section 6.8 for details. Note that the frontend will not work correctly with an incomplete backend. As part of this iteration, it is required that your backend code can correctly power the frontend.
-      * You can, if you wish, make changes to the frontend code, but it is not required for this course.
+   - In iteration 2 and 3, we provide a frontend that can be powered by your backend: see section 6.8 for details. Note that the frontend will not work correctly with an incomplete backend. As part of this iteration, it is required that your backend code can correctly power the frontend.
 
-    * You must comply with instructions laid out in `5.3`
+     - You can, if you wish, make changes to the frontend code, but it is not required for this course.
 
-    * Ensure that you correctly manage sessions (tokens) and passwords in terms of authentication and authorisation, as per requirements laid out in section 6.9.
+   - You must comply with instructions laid out in `5.3`
+
+   - Ensure that you correctly manage sessions (tokens) and passwords in terms of authentication and authorisation, as per requirements laid out in section 6.9.
 
 3. Continue demonstrating effective project management and git usage.
 
-    * You will be heavily marked on your thoughtful approach to project management and effective use of git. The degree to which your team works effectively will also be assessed.
+   - You will be heavily marked on your thoughtful approach to project management and effective use of git. The degree to which your team works effectively will also be assessed.
 
-    * As for iteration 1 and 2, all task tracking and management will need to be done via the GitLab Taskboard or other tutor-approved tracking mechanism.
+   - As for iteration 1 and 2, all task tracking and management will need to be done via the GitLab Taskboard or other tutor-approved tracking mechanism.
 
-    * As for iteration 1 and 2, regular group meetings must be documented with meeting minutes which should be stored at a timestamped location in your repo (e.g. uploading a word doc/pdf or writing in the GitLab repo wiki after each meeting).
+   - As for iteration 1 and 2, regular group meetings must be documented with meeting minutes which should be stored at a timestamped location in your repo (e.g. uploading a word doc/pdf or writing in the GitLab repo wiki after each meeting).
 
-    * As for iteration 1 and 2, you must be able to demonstrate evidence of regular standups.
+   - As for iteration 1 and 2, you must be able to demonstrate evidence of regular standups.
 
-    * You are required to regularly and thoughtfully make merge requests for the smallest reasonable units, and merge them into `master`.
+   - You are required to regularly and thoughtfully make merge requests for the smallest reasonable units, and merge them into `master`.
 
 4. Document the planning of new features.
 
-    * You are required to scope out 2-3 problems to solve for future iterations of Treats. You aren't required to build/code them, but you are required to go through SDLC steps of requirements analysis, conceptual modelling, and design.
+   - You are required to scope out 2-3 problems to solve for future iterations of Treats. You aren't required to build/code them, but you are required to go through SDLC steps of requirements analysis, conceptual modelling, and design.
 
-    * Full detail of this can be found in `5.6`.
+   - Full detail of this can be found in `5.6`.
 
 5. Deploy your backend to the cloud.
 
-    * You are required to deploy your backend to a cloud provider so that your backend can be accessed from anywhere in the world. **Add the URL to your deployed backend** inside `deploy-url.md`.
+   - You are required to deploy your backend to a cloud provider so that your backend can be accessed from anywhere in the world. **Add the URL to your deployed backend** inside `deploy-url.md`.
 
-    * Full detail of this can be found in `5.7`
+   - Full detail of this can be found in `5.7`
 
 ### 5.2. Running the server
 
@@ -141,22 +151,24 @@ There is no requirement that each feature be implemented by only one person. In 
 
 Please pay careful attention to the following:
 
-* We want to see **evidence that you wrote your tests before writing the implementation**. As noted above, the commits containing your initial tests should appear *before* your implementation for every feature branch. If we don't see this evidence, we will assume you did not write your tests first and your mark will be reduced.
-* You should have black-box tests for all tests required (i.e. testing each function/endpoint). However, you are also welcome to write whitebox unit tests in this iteration if you see that as important.
-* Merging in merge requests with failing pipelines is **very bad practice**. Not only does this interfere with your teams ability to work on different features at the same time, and thus slow down development, it is something you will be penalised for in marking.
-* Similarly, merging in branches with untested features is also **very bad practice**. We will assume, and you should too, that any code without tests does not work.
-* Pushing directly to `master` is not possible for this repo. The only way to get code into `master` is via a merge request. If you discover you have a bug in `master` that got through testing, create a bugfix branch and merge that in via a merge request.
+- We want to see **evidence that you wrote your tests before writing the implementation**. As noted above, the commits containing your initial tests should appear _before_ your implementation for every feature branch. If we don't see this evidence, we will assume you did not write your tests first and your mark will be reduced.
+- You should have black-box tests for all tests required (i.e. testing each function/endpoint). However, you are also welcome to write whitebox unit tests in this iteration if you see that as important.
+- Merging in merge requests with failing pipelines is **very bad practice**. Not only does this interfere with your teams ability to work on different features at the same time, and thus slow down development, it is something you will be penalised for in marking.
+- Similarly, merging in branches with untested features is also **very bad practice**. We will assume, and you should too, that any code without tests does not work.
+- Pushing directly to `master` is not possible for this repo. The only way to get code into `master` is via a merge request. If you discover you have a bug in `master` that got through testing, create a bugfix branch and merge that in via a merge request.
 
 ### 5.4. Test coverage
 
 To get the coverage of your tests locally, you will need to have two terminals open. Run these commands from the root directory of your project.
 
 In the first terminal, run
+
 ```bash
 npm run ts-node-coverage
 ```
 
 In the second terminal, run jest as usual
+
 ```bash
 npm run test
 ```
@@ -173,7 +185,7 @@ To run the dryrun, you should be in the root directory of your project (e.g. `/p
 1531 dryrun 2
 ```
 
-To view the dryrun tests, you can run the following command on the CSE machines:  
+To view the dryrun tests, you can run the following command on the CSE machines:
 
 ```bash
 cat ~cs1531/bin/iter2_test.py
@@ -193,7 +205,7 @@ We have opted not to provide you with a sample structure - because we're not int
 
 Find 2-3 people to interview as target users. Target users are people who currently use a tool like Treats, or intend to. Record their name and email address.
 
-Develop a series of questions (at least 4) to ask these target users to understand what *problems* they might have with teamwork-driven communication tools that are currently unsolved by Treats. Give these questions to your target users and record their answers.
+Develop a series of questions (at least 4) to ask these target users to understand what _problems_ they might have with teamwork-driven communication tools that are currently unsolved by Treats. Give these questions to your target users and record their answers.
 
 Once you have done this, think about how you would solve the target users' problem(s) and write down a brief description of a proposed solution.
 
@@ -220,8 +232,9 @@ Now that you have a sense of the problem to solve, and what capabilities you wil
 ### 5.7. Deployment
 
 You and your team are to host your backend on a cloud provider. Once your backend has been deployed to the cloud, you will be able to point the frontend to use the new URL of where the backend is deployed and use your backend from anywhere in the world. In summary:
- * You get your server (that you wrote) deployed to the internet at a public URL
- * You still run your frontend locally (which can connect to that server)
+
+- You get your server (that you wrote) deployed to the internet at a public URL
+- You still run your frontend locally (which can connect to that server)
 
 Depending on how you and your team have structured your project, your current method of using data may have to be rethought. Deploying to cloud and developing locally require two different mindsets and you and your team may find that you held some assumptions that are valid when developing locally but do not hold when being hosted on the cloud.
 
@@ -320,16 +333,15 @@ The formula used for automarking in this iteration is:
 (Mark equals `t` multiplied by `i` multiplied by the minimum of `c + 1` and 100 to the power of three)
 
 Where:
- * `t` is the mark you receive for your tests running against your code (100% = your implementation passes all of your tests).
- * `i` is the mark you receive for our course tests (hidden) running against your code (100% = your implementation passes all of our tests).
- * `c` is the score achieved by running coverage on your entire codebase. Note that 99% coverage is enough to give you full marks for this part.
- * `e` is the score between 0-1 achieved by running eslint against your code and the provided configuration.
 
+- `t` is the mark you receive for your tests running against your code (100% = your implementation passes all of your tests).
+- `i` is the mark you receive for our course tests (hidden) running against your code (100% = your implementation passes all of our tests).
+- `c` is the score achieved by running coverage on your entire codebase. Note that 99% coverage is enough to give you full marks for this part.
+- `e` is the score between 0-1 achieved by running eslint against your code and the provided configuration.
 
 ### 5.9. Submission
 
 This iteration due date described in section 7. Note there will be no demonstration for iteration 3.
-
 
 ### 5.10. Extra Features
 
@@ -341,13 +353,12 @@ Here are some suggestions for extra features.
 
 1. Frontend - **Hangman on Frontend**
 
-    * After a game of Hangman has been started, any user in the channel can type "/guess X" where X is an individual letter. If that letter is contained in the word or phrase they're trying to guess, the app should indicate where it occurs. If it does not occur, more of the hangman is drawn. 
-    
-    * There is a lot of flexibility in how you achieve this. It can be done only by modifying the backend and relying on messages to communicate the state of the game (e.g. after making a guess, the "Hangman" posts a message with a drawing of the hangman in ASCII/emoji art). Alternatively, you can modify the frontend, if you want to experiment with fancier graphics.
+   - After a game of Hangman has been started, any user in the channel can type "/guess X" where X is an individual letter. If that letter is contained in the word or phrase they're trying to guess, the app should indicate where it occurs. If it does not occur, more of the hangman is drawn.
+   - There is a lot of flexibility in how you achieve this. It can be done only by modifying the backend and relying on messages to communicate the state of the game (e.g. after making a guess, the "Hangman" posts a message with a drawing of the hangman in ASCII/emoji art). Alternatively, you can modify the frontend, if you want to experiment with fancier graphics.
 
-    * The app should use words and phrases from an external source, not just a small handful hardcoded into the app. One suitable source is `/usr/share/dict/words` available on Unix-based systems
+   - The app should use words and phrases from an external source, not just a small handful hardcoded into the app. One suitable source is `/usr/share/dict/words` available on Unix-based systems
 
-    * Note that this part of the specification is deliberately open-ended. You're free to make your own creative choices in exactly how the game should work, as long as the end result is something that could be fairly described as Hangman.
+   - Note that this part of the specification is deliberately open-ended. You're free to make your own creative choices in exactly how the game should work, as long as the end result is something that could be fairly described as Hangman.
 
 2. Frontend - **Dark Mode** - Modify the frontend code so that on the flip of a switch in the navbar, the website can change to "dark mode" with a colour scheme of your choosing.
 
@@ -355,7 +366,7 @@ Here are some suggestions for extra features.
 
 4. **Databases** - Implementing persistence using a form of database via `typeorm`.
 
-7. **New Features** - Implement one or more of the features you have elicited in your Requirements & Design.
+5. **New Features** - Implement one or more of the features you have elicited in your Requirements & Design.
 
 ### 5.11. Peer Assessment
 
@@ -368,6 +379,7 @@ These interface specifications come from Hayden & COMP6080, who are building the
 ### 6.1. Input/Output types
 
 #### 6.1.1. Iteration 0+ Input/Output Types
+
 <table>
   <tr>
     <th>Variable name</th>
@@ -588,13 +600,14 @@ These interface specifications come from Hayden & COMP6080, who are building the
 #### 6.2.3. Iteration 2 Interface
 
 Changelog:
-* Error returns should be converted to the respective Exception (see table below and section 6.8.2)
-* All routes that require a `token` should raise a `403 Error` object when the `token` passed in is invalid.
-* Instead of passing `token` as a query or body parameter, you should pass it through a HTTP header (see section 6.9):
-  * You should remove `token` from query and body parameters for all routes.  
-  * You also need to increment the version of each route that previously accepted `token` as a query or body parameter, e.g. v2 --> v3.  
-* New error case for `channel/leave/v2`, added in table below.
-* Added functionality for `message/edit/v2` in regards to standups, in table below.
+
+- Error returns should be converted to the respective Exception (see table below and section 6.8.2)
+- All routes that require a `token` should raise a `403 Error` object when the `token` passed in is invalid.
+- Instead of passing `token` as a query or body parameter, you should pass it through a HTTP header (see section 6.9):
+  - You should remove `token` from query and body parameters for all routes.
+  - You also need to increment the version of each route that previously accepted `token` as a query or body parameter, e.g. v2 --> v3.
+- New error case for `channel/leave/v2`, added in table below.
+- Added functionality for `message/edit/v2` in regards to standups, in table below.
 
 <table>
   <tr>
@@ -981,6 +994,7 @@ Changelog:
 </table>
 
 #### 6.2.4. Iteration 3 Interface
+
 All return values should be an object, with keys identically matching the names in the table below, along with their respective values.
 
 <table>
@@ -1250,15 +1264,14 @@ All return values should be an object, with keys identically matching the names 
   </tr>
 </table>
 
-
 ### 6.3. Valid email format
 
 To check an email is valid, you may use the following package and function.
 
 ```javascript
-import validator from 'validator';
+import validator from "validator";
 
-validator.isEmail('foo@bar.com');
+validator.isEmail("foo@bar.com");
 ```
 
 ### 6.4. Testing
@@ -1270,27 +1283,29 @@ A common question asked throughout the project is usually "How can I test this?"
 The behaviour in which channelMessages returns data is called **pagination**. It's a commonly used method when it comes to getting theoretially unbounded amounts of data from a server to display on a page in chunks. Most of the timelines you know and love - Facebook, Instagram, LinkedIn - do this.
 
 For example, in iteration 1, if we imagine a user with `authUserId` 12345 is trying to read messages from channel with ID 6, and this channel has 124 messages in it, 3 calls from the client to the server would be made. These calls, and their corresponding return values would be:
- * `channelMessages(12345, 6, 0) => { [messages], 0, 50 }`
- * `channelMessages(12345, 6, 50) => { [messages], 50, 100 }`
- * `channelMessages(12345, 6, 100) => { [messages], 100, -1 }`
+
+- `channelMessages(12345, 6, 0) => { [messages], 0, 50 }`
+- `channelMessages(12345, 6, 50) => { [messages], 50, 100 }`
+- `channelMessages(12345, 6, 100) => { [messages], 100, -1 }`
 
 Pagination should also apply to messages in DMs.
 
 ### 6.6. Permissions
 
- * Members in a channel/DM have one of two channel/DM permissions
-   1) Owners of the channel/DM
-   2) Members of the channel/DM
- * Treats users have two global permissions
-   1) Owners (permission id 1), who can also modify other owners' permissions
-   2) Members (permission id 2), who do not have any special permissions
-* All Treats users are global members by default, except for the very first user who signs up, who is a global owner
+- Members in a channel/DM have one of two channel/DM permissions
+  1.  Owners of the channel/DM
+  2.  Members of the channel/DM
+- Treats users have two global permissions
+  1.  Owners (permission id 1), who can also modify other owners' permissions
+  2.  Members (permission id 2), who do not have any special permissions
+- All Treats users are global members by default, except for the very first user who signs up, who is a global owner
 
 A user's primary permissions are their global permissions. Then the channel/DM permissions are layered on top. For example:
-* An owner of Treats has channel owner permissions in every channel they've joined. Despite obtaining owner permissions upon joining a channel, they do not become channel owners unless a channel owner explicitly adds them as one. Hence, if they are removed as a global owner, they will no longer have those channel owner permissions.
-* Treats owners do not have owner permissions in DMs. The only users with owner permissions in DMs are the original creators of each DM.
-* A member of Treats is a member in channels that they are part of but are not owners of
-* A member of Treats is an owner in channels they are owners of
+
+- An owner of Treats has channel owner permissions in every channel they've joined. Despite obtaining owner permissions upon joining a channel, they do not become channel owners unless a channel owner explicitly adds them as one. Hence, if they are removed as a global owner, they will no longer have those channel owner permissions.
+- Treats owners do not have owner permissions in DMs. The only users with owner permissions in DMs are the original creators of each DM.
+- A member of Treats is a member in channels that they are part of but are not owners of
+- A member of Treats is an owner in channels they are owners of
 
 ### 6.7. User Sessions
 
@@ -1325,8 +1340,9 @@ One exception is that, even though it's not listed in the table, for all routes 
 For errors to be appropriately raised on the frontend, they must be thrown as follows:
 
 ```javascript
-if (true) { // condition here
-    throw HTTPError(403, "description")
+if (true) {
+  // condition here
+  throw HTTPError(403, "description");
 }
 ```
 
@@ -1347,30 +1363,32 @@ You must **hash** tokens in iteration 3, and pass them through a custom `token` 
 In this model, you will replace `token` query and body parameters with a `token` HTTP header when dealing with requests only. You shouldn't remove `token` parameters from backend functions, as they must perform the validity checks.
 
 You can access HTTP headers like so:
+
 ```javascript
-const token = req.header('token');
+const token = req.header("token");
 ```
 
 A sample flow logging a user in might be as follows (other flows exist too):
+
 1. Client makes a valid `auth/login` call
 2. Server generates `token` and `hashOf(token+secret)`
 3. Server returns the hash as the `token` value in the response's body.
 
 A sample flow creating a channel might be as follows:
+
 1. Client makes a valid `channel/create` call
 2. Server gets `token` hash in th request's HTTP header
 3. Server passes `token` hash to the relevant backend function to compare to the stored `token`, determining if it's a valid session.
 
 **Why hash tokens?**
-If we hash tokens (combined with a global secret) before storing them, and an attacker gets access to our backend of active sessions (i.e. our list of valid tokens), they won't be able to determine the client-side token (as they don't know the hash function or secret added to the token). 
+If we hash tokens (combined with a global secret) before storing them, and an attacker gets access to our backend of active sessions (i.e. our list of valid tokens), they won't be able to determine the client-side token (as they don't know the hash function or secret added to the token).
 
 **Why pass tokens as a HTTP header?**
 Any query parameters (those used by `GET/DELETE` functions) can be read in plaintext by an eavesdropper spying on your HTTP requests. Hence, by passing an authentication token as a query parameter, we're allowing an attacker to intercept our request, steal our token and impersonate other users! On the other hand, HTTP headers are encrypted (as long as you use HTTPS protocol), meaning an eavesdropper won't be able to read token values.
 
-While this safely protects sessions from server-side attacks (accessing our persistent data) and man-in-the-middle attacks (intercepting our HTTP requests), it doesn't protect against client-side attacks (stealing a token on the client-side, after the HTTP header has been decoded and received by the user). 
+While this safely protects sessions from server-side attacks (accessing our persistent data) and man-in-the-middle attacks (intercepting our HTTP requests), it doesn't protect against client-side attacks (stealing a token on the client-side, after the HTTP header has been decoded and received by the user).
 
 **You do not need to worry about mitigating client-side attacks**, but you can read more about industry-standard session management <a href="https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html#secure-attribute">here</a>.
-
 
 ### 6.10. Notifications and tagging users
 
@@ -1385,10 +1403,11 @@ A user should not be notified of any reactions to their messages if they are no 
 A user is tagged when a message contains the @ symbol, followed immediately by the user’s handle. The end of the handle is signified by the end of the message, or a non-alphanumeric character. The message '`hi@handle`' contains a valid tag. '`@handle1@handle2 hello!`' contains two valid tags.
 
 Some additional requirements are:
-* If the handle is invalid, or the user is not a member of the channel or DM, no one is tagged.
-* A user should be able to tag themselves.
-* A message can contain multiple tags.
-* If the same valid tag appears multiple times in one message, the user is only notified once.
+
+- If the handle is invalid, or the user is not a member of the channel or DM, no one is tagged.
+- A user should be able to tag themselves.
+- A message can contain multiple tags.
+- If the same valid tag appears multiple times in one message, the user is only notified once.
 
 Tagging should also occur when messages are edited to contain tags and when the message/share optional message contains tags.
 
@@ -1399,16 +1418,18 @@ There is no requirement to have tags notify users inside a standup or when the b
 COMP6080 students have implemented analytics pages for users and for the Treats workspace on the frontend, and now these pages need data. Your task is to add backend functionality that keeps track of these metrics:
 
 For users:
-  * The number of channels the user is a part of
-  * The number of DMs the user is a part of
-  * The number of messages the user has sent
-  * The user's involvement, as defined by this pseudocode: `sum(numChannelsJoined, numDmsJoined, numMsgsSent)/sum(numChannels, numDms, numMsgs)`. If the denominator is 0, involvement should be 0. If the involvement is greater than 1, it should be capped at 1.
+
+- The number of channels the user is a part of
+- The number of DMs the user is a part of
+- The number of messages the user has sent
+- The user's involvement, as defined by this pseudocode: `sum(numChannelsJoined, numDmsJoined, numMsgsSent)/sum(numChannels, numDms, numMsgs)`. If the denominator is 0, involvement should be 0. If the involvement is greater than 1, it should be capped at 1.
 
 For the Treats workspace:
-  * The number of channels that exist currently
-  * The number of DMs that exist currently
-  * The number of messages that exist currently
-  * The workspace's utilization, which is a ratio of the number of users who have joined at least one channel/DM to the current total number of users, as defined by this pseudocode: `numUsersWhoHaveJoinedAtLeastOneChannelOrDm / numUsers`
+
+- The number of channels that exist currently
+- The number of DMs that exist currently
+- The number of messages that exist currently
+- The workspace's utilization, which is a ratio of the number of users who have joined at least one channel/DM to the current total number of users, as defined by this pseudocode: `numUsersWhoHaveJoinedAtLeastOneChannelOrDm / numUsers`
 
 As UNSW is very interested in its users' engagement, the analytics must be **time-series data**. This means every change to the above metrics (excluding `involvementRate` and `utilizationRate`) must be timestamped, rather than just the most recent change. For users, the first data point should be 0 for all metrics at the time that their account was created. Similarly, for the workspace, the first data point should be 0 for all metrics at the time that the first user registers. The first element in each array should be the first metric. The latest metric should be the last element in the array.
 
@@ -1419,10 +1440,12 @@ For the workspace, `numMsgs` is the number of messages that exist at the current
 In addition to keeping track of these metrics, you are required to implement two new endpoints, `user/stats` and `users/stats`.
 
 ### 6.12. Reacts
+
 The only React ID currently associated with the frontend is React ID 1, which is a thumbs up. You are welcome to add more (this will require some frontend work).
 
 ### 6.13. Standups
-Once a standup is finished, all of the messages sent to `standup/send` are packaged together in *one single message* posted by *the user who started the standup*. This packaged message is sent as a message to the channel where the standup was started, timestamped at the moment the standup finished.
+
+Once a standup is finished, all of the messages sent to `standup/send` are packaged together in _one single message_ posted by _the user who started the standup_. This packaged message is sent as a message to the channel where the standup was started, timestamped at the moment the standup finished.
 
 The structure of the packaged message is like this:
 
@@ -1447,20 +1470,21 @@ Standups can be started on the frontend by typing "/standup X" (where X is the n
 You will not be tested on any behaviour involving the user who started a standup being removed from the channel or Treats while the standup is ongoing, therefore you can decide this behaviour yourself.
 
 ### 6.14. profileImgUrl & image uploads
+
 For outputs with data pertaining to a user, a `profileImgUrl` must be present. When images are uploaded for a user profile, after processing them you should store them on the server such that your server now locally has a copy of the cropped image of the original file linked. Then, the `profileImgUrl` should be a URL to the server, such as http://localhost:5001/imgurl/adfnajnerkn23k4234.jpg (a unique url you generate).
 
 For any given user, if they have yet to upload an image, there should be a site-wide default image used.
 
-Note: This is most likely the most challenging part of the project, so don't get lost in this. We would strongly recommend most teams complete this capability *last*.
+Note: This is most likely the most challenging part of the project, so don't get lost in this. We would strongly recommend most teams complete this capability _last_.
 
 ## 7. Due Dates and Weightings
 
-|Iteration|Due date                              |Demonstration to tutor(s)      |Assessment weighting of project (%)|
-|---------|--------------------------------------|-------------------------------|-----------------------------------|
-|   0     |10pm Friday 10th June (**week 2**)    |No demonstration               |5%                                |
-|   1     |10pm Friday 24th June  (**week 4**)   |In YOUR **week 5** laboratory  |30%                                |
-|   2     |10pm Friday 15th July (**week 7**)    |In YOUR **week 8** laboratory  |35%                                |
-|   3     |10pm Friday 5th August (**week 10**)  |No demonstration               |30%                                |
+| Iteration | Due date                             | Demonstration to tutor(s)     | Assessment weighting of project (%) |
+| --------- | ------------------------------------ | ----------------------------- | ----------------------------------- |
+| 0         | 10pm Friday 10th June (**week 2**)   | No demonstration              | 5%                                  |
+| 1         | 10pm Friday 24th June (**week 4**)   | In YOUR **week 5** laboratory | 30%                                 |
+| 2         | 10pm Friday 15th July (**week 7**)   | In YOUR **week 8** laboratory | 35%                                 |
+| 3         | 10pm Friday 5th August (**week 10**) | No demonstration              | 30%                                 |
 
 ### 7.1. Submission & Late Penalties
 
@@ -1489,10 +1513,11 @@ Demonstrations take place during lab time and consist of a 15 minute Q&A in fron
 ## 8. Individual Contribution
 
 While we do award a tentative mark to your group as a whole, your actual mark for each iteration is given to you individually. Your individual mark is determined by your tutor, with your group mark as a reference point. Your tutor will look at the following items each iteration to determine your mark:
- * Project check-in
- * Code contribution
- * Tutorial contributions
- * Peer assessment
+
+- Project check-in
+- Code contribution
+- Tutorial contributions
+- Peer assessment
 
 In general, all team members will receive the same mark (a sum of the marks for each iteration), **but if you as an individual fail to meet these criteria, your final project mark may be scaled down**, most likely quite significantly.
 
@@ -1509,9 +1534,10 @@ These are easy marks. They are marks assumed that you will receive automatically
 ### 8.2. Tutorial contributions
 
 From weeks 2 onward, your individual project mark may be reduced if you do not satisfy the following:
-* Attend all tutorials
-* Participate in tutorials by asking questions and offering answers
-* [online only] Have your web cam on for the duration of the tutorial and lab
+
+- Attend all tutorials
+- Participate in tutorials by asking questions and offering answers
+- [online only] Have your web cam on for the duration of the tutorial and lab
 
 We're comfortable with you missing or disengaging with 1 tutorial per term, but for anything more than that please email your tutor. If you cannot meet one of the above criteria, you will likely be directed to special consideration.
 
@@ -1550,7 +1576,7 @@ Note that, **contributing more documentation is not a substitute for not contrib
 
 ### 8.5. Peer Assessment
 
-At the end of each iteration, there will be a peer assessment survey where you will rate and leave comments about each team member's contribution to the project up until that point. 
+At the end of each iteration, there will be a peer assessment survey where you will rate and leave comments about each team member's contribution to the project up until that point.
 
 Your other team members will **not** be able to see how you rated them or what comments you left in either peer assessment. If your team members give you a less than satisfactory rating, your contribution will be scrutinised and you may find your final mark scaled down.
 
@@ -1586,6 +1612,7 @@ Your other team members will **not** be able to see how you rated them or what c
 When a group member does not contribute equally, we are aware it can implicitly have an impact on your own mark by pulling the group mark down (e.g. through not finishing a critical feature), etc.
 
 The first step of any disagreement or issue is always to talk to your team member(s) on the chats in MS teams. Make sure you've been:
+
 1. Been clear about the issue you feel exists
 2. Been clear about what you feel needs to happen and in what time frame to feel the issue is resolved
 3. Gotten clarity that your team member(s) want to make the change.
