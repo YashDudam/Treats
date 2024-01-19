@@ -4,6 +4,7 @@ build
 coverage/
 .nyc_output
 results/
+package-lock.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
