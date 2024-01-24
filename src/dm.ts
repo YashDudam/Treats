@@ -1,12 +1,9 @@
 // dm.ts
 // Implements direct messaging features
-import { getData, setData } from './dataStore';
+import { Dm, Empty, Error, getData, Member, Message, setData } from './dataStore';
 import { getUNIXTime } from './other';
-import {
-  Data, dmData, dmDetailType, dmIdType, dmListType,
-  dmMessages, emptyType, errorType, member, userData
-} from './types';
 
+type DmId = { dmId: number };
 // Creates a new dm
 // Arguments:
 //     <authUserId> (number)    - user id
@@ -14,32 +11,32 @@ import {
 // Return Value:
 //     Returns { error: ... } if any values are invalid
 //     Returns { dmId: number } if successful
-const dmCreateV1 = (authUserId: number, uIds: number[]): dmIdType | errorType => {
+const dmCreateV1 = (authUserId: number, uIds: number[]): DmId | Error => {
   const timeStamp = getUNIXTime();
-  const data: Data = getData();
-  const users: userData[] = data.userData;
-  const dms: dmData[] = data.dmData;
+  const data = getData();
+  const users = data.users;
+  const dms = data.dms;
   const memberHandles: string[] = [];
   let dmName: string;
 
   // Get details of user creating dm
-  const ownerUser = users.find(user => user.uId === authUserId);
+  const ownerUser = users.find(user => user.id === authUserId);
 
-  memberHandles.push(ownerUser.handleStr);
+  memberHandles.push(ownerUser.handle);
 
-  const owner: member = {
-    uId: authUserId,
-    handleStr: ownerUser.handleStr,
+  const owner: Member = {
+    id: authUserId,
+    handle: ownerUser.handle,
     nameFirst: ownerUser.nameFirst,
     nameLast: ownerUser.nameLast,
     email: ownerUser.email
   };
 
   // Initialise new dm
-  const newDm: dmData = {
+  const newDm: Dm = {
     name: undefined,
-    dmId: dms.length + 1,
-    ownerMember: owner,
+    id: dms.length + 1,
+    owner: owner,
     members: [owner],
     messages: []
   };
@@ -48,11 +45,11 @@ const dmCreateV1 = (authUserId: number, uIds: number[]): dmIdType | errorType =>
   // Assumes that authUserId and the user calling the function is valid
   for (const uId of uIds) {
     // Validity check
-    const user = users.find(user => user.uId === uId);
+    const user = users.find(user => user.id === uId);
     if (user === undefined) return { error: 'Invalid user(s)' };
 
     // Add to memberHandles for sorting
-    memberHandles.push(user.handleStr);
+    memberHandles.push(user.handle);
 
     // Duplicate check
     let instances = 0;
@@ -64,9 +61,9 @@ const dmCreateV1 = (authUserId: number, uIds: number[]): dmIdType | errorType =>
     if (instances !== 1) return { error: 'Duplicate uIds' };
 
     // If valid add to members
-    const newMember: member = {
-      uId: uId,
-      handleStr: user.handleStr,
+    const newMember: Member = {
+      id: uId,
+      handle: user.handle,
       nameFirst: user.nameFirst,
       nameLast: user.nameLast,
       email: user.email
@@ -89,8 +86,8 @@ const dmCreateV1 = (authUserId: number, uIds: number[]): dmIdType | errorType =>
   dms.push(newDm);
   uIds = [authUserId, ...uIds];
   for (const uId of uIds) {
-    for (const user of data.userData) {
-      if (user.uId === uId) {
+    for (const user of data.users) {
+      if (user.id === uId) {
         const obj = {
           numDmsJoined: user.userStats.dmsJoined[user.userStats.dmsJoined.length - 1].numDmsJoined + 1,
           timeStamp: timeStamp,
@@ -101,24 +98,30 @@ const dmCreateV1 = (authUserId: number, uIds: number[]): dmIdType | errorType =>
   }
   setData(data);
 
-  return { dmId: newDm.dmId };
+  return { dmId: newDm.id };
 };
 
+type DmList = {
+  dmId: number,
+  name: string,
+};
+
+type DmListWrapper = { dms: DmList[] };
 // Provides an array of dms the specified user is in
 // Arguments:
 //     <authUserId> (number)    - user id
 // Return Value:
 //     Returns an array of { dmId: number, name: string }
-const dmListV1 = (authUserId: number): object => {
-  const data: Data = getData();
-  const dms: dmData[] = data.dmData;
-  const dmList: dmListType[] = [];
+const dmListV1 = (authUserId: number): DmListWrapper => {
+  const data = getData();
+  const dms = data.dms;
+  const dmList: DmList[] = [];
 
-  dms.forEach((dm: dmData) => {
-    dm.members.forEach((member: member) => {
-      if (member.uId === authUserId) {
+  dms.forEach((dm) => {
+    dm.members.forEach((member: Member) => {
+      if (member.id === authUserId) {
         dmList.push({
-          dmId: dm.dmId,
+          dmId: dm.id,
           name: dm.name
         });
       }
@@ -128,6 +131,10 @@ const dmListV1 = (authUserId: number): object => {
   return { dms: dmList };
 };
 
+type DmDetails = {
+  name: string,
+  members: Member[]
+};
 // Displays basic info about the specified dm
 // Arguments:
 //     <authUserId> (number)    - user id
@@ -137,16 +144,16 @@ const dmListV1 = (authUserId: number): object => {
 //     Returns { name: string, members: member[] } if successful
 // Assumptions:
 //   - authUserId is valid (token is validated in wrapper func)
-const dmDetailsV1 = (authUserId: number, dmId: number): dmDetailType | errorType => {
-  const data: Data = getData();
-  const dms: dmData[] = data.dmData;
+const dmDetailsV1 = (authUserId: number, dmId: number): DmDetails | Error => {
+  const data = getData();
+  const dms = data.dms;
 
   // Get relevant dm and check that dmId is valid
-  const dm = dms.find(dm => dm.dmId === dmId);
+  const dm = dms.find(dm => dm.id === dmId);
   if (dm === undefined) return { error: 'Invalid dmId' };
 
   // Check member is in dm
-  const memberIndex = dm.members.findIndex(member => member.uId === authUserId);
+  const memberIndex = dm.members.findIndex(member => member.id === authUserId);
   if (memberIndex < 0) return { error: 'User is not a dm member' };
 
   return {
@@ -155,6 +162,11 @@ const dmDetailsV1 = (authUserId: number, dmId: number): dmDetailType | errorType
   };
 };
 
+type DmMessages = {
+  messages: Message[],
+  start: number,
+  end: number
+}
 // Displays up to 50 messages from the specified dm
 // Arguments:
 //     <authUserId> (number)  - user id
@@ -168,9 +180,9 @@ const dmDetailsV1 = (authUserId: number, dmId: number): dmDetailType | errorType
 //     Returns { messages message[], start: number, end: number } if successful
 // Assumptions:
 //   - authUserId is valid (token is validated in wrapper func)
-const dmMessagesV1 = (authUserId: number, dmId: number, start: number): dmMessages | errorType => {
-  const data: Data = getData();
-  const dms: dmData[] = data.dmData;
+const dmMessagesV1 = (authUserId: number, dmId: number, start: number): DmMessages | Error => {
+  const data = getData();
+  const dms = data.dms;
 
   // settings
   const DISPLAYED_ALL_MESSAGES = -1;
@@ -180,7 +192,7 @@ const dmMessagesV1 = (authUserId: number, dmId: number, start: number): dmMessag
   let end = start + DISPLAY_COUNT;
 
   // Get relevant dm and check that dmId is valid
-  const dm = dms.find(dm => dm.dmId === dmId);
+  const dm = dms.find(dm => dm.id === dmId);
   if (dm === undefined) return { error: 'Invalid dmId' };
 
   // Make sure start is valid
@@ -193,11 +205,11 @@ const dmMessagesV1 = (authUserId: number, dmId: number, start: number): dmMessag
   }
 
   // Check member is in dm
-  const memberIndex = dm.members.findIndex((member: member) => member.uId === authUserId);
+  const memberIndex = dm.members.findIndex((member: Member) => member.id === authUserId);
   if (memberIndex < 0) return { error: 'User is not a dm member' };
 
   // Populate return object
-  const dmMessages: dmMessages = {
+  const dmMessages: DmMessages = {
     messages: [],
     start: start,
     end: end
@@ -218,26 +230,26 @@ const dmMessagesV1 = (authUserId: number, dmId: number, start: number): dmMessag
 //     Returns { } if successful
 // Assumptions:
 //   - authUserId is valid (token is validated in wrapper func)
-const dmLeaveV1 = (authUserId: number, dmId: number): emptyType | errorType => {
+const dmLeaveV1 = (authUserId: number, dmId: number): Empty | Error => {
   const timeStamp = getUNIXTime();
   const data = getData();
 
   // Get dm and check that it exists
-  const dm = data.dmData.find(dm => dm.dmId === dmId);
+  const dm = data.dms.find(dm => dm.id === dmId);
   if (dm === undefined) return { error: 'Invalid dmId' };
 
   // Check user is a member of dm
-  const memberIndex = dm.members.findIndex(member => member.uId === authUserId);
+  const memberIndex = dm.members.findIndex(member => member.id === authUserId);
   if (memberIndex < 0) return { error: 'User is not a dm member' };
 
   // Remove user from dm
   dm.members.splice(memberIndex, 1);
 
   // Sets owner to undefined if owner leaves
-  if (dm.ownerMember.uId === dmId) dm.ownerMember = undefined;
+  if (dm.owner.id === dmId) dm.owner = undefined;
 
-  for (const user of data.userData) {
-    if (user.uId === authUserId) {
+  for (const user of data.users) {
+    if (user.id === authUserId) {
       const obj = {
         numDmsJoined: user.userStats.dmsJoined[user.userStats.dmsJoined.length - 1].numDmsJoined - 1,
         timeStamp: timeStamp,
@@ -260,39 +272,39 @@ const dmLeaveV1 = (authUserId: number, dmId: number): emptyType | errorType => {
 function dmRemoveV1(authUserId: number, dmId: number) {
   const timeStamp = getUNIXTime();
   const data = getData();
-  const dm = data.dmData.find(dm => dm.dmId === dmId);
+  const dm = data.dms.find(dm => dm.id === dmId);
 
   // Return error if dmId not valid
   if (dm === undefined) return { error: 'Invalid dmId' };
 
   // Return error if valid dmId but authUser is not the original DM creator
-  if (dm.ownerMember === undefined || authUserId !== dm.ownerMember.uId) {
+  if (dm.owner === undefined || authUserId !== dm.owner.id) {
     return { error: 'User is not the original DM creator' };
   }
   // Return error if authUser no longer in the DM
-  if (dm.members.find(m => m.uId === authUserId) === undefined) {
+  if (dm.members.find(m => m.id === authUserId) === undefined) {
     return { error: 'User is no longer a dm member' };
   }
 
   const uIds = [];
-  for (const dm of data.dmData) {
-    if (dm.dmId === dmId) {
+  for (const dm of data.dms) {
+    if (dm.id === dmId) {
       for (const member of dm.members) {
-        uIds.push(member.uId);
+        uIds.push(member.id);
       }
     }
   }
 
   // Remove DM from dmData array in dataStore
-  for (let i = 0; i < data.dmData.length; i++) {
-    if (data.dmData[i].dmId === dmId) {
-      data.dmData.splice(i, 1);
+  for (let i = 0; i < data.dms.length; i++) {
+    if (data.dms[i].id === dmId) {
+      data.dms.splice(i, 1);
     }
   }
 
   for (const uId of uIds) {
-    for (const user of data.userData) {
-      if (user.uId === uId) {
+    for (const user of data.users) {
+      if (user.id === uId) {
         const obj = {
           numDmsJoined: user.userStats.dmsJoined[user.userStats.dmsJoined.length - 1].numDmsJoined - 1,
           timeStamp: timeStamp,

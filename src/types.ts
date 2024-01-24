@@ -113,25 +113,7 @@ type errorToken = {
   error: string
 }
 
-type dmIdType = { dmId: number };
-
 type messageIdType = { messageId: number };
-
-type dmListType = {
-  dmId: number,
-  name: string
-}
-
-type dmDetailType = {
-  name: string,
-  members: member[]
-}
-
-type dmMessages = {
-  messages: message[],
-  start: number,
-  end: number
-}
 
 type requestMessageSendV1Return = {
   result: messageIdType | errorType,
