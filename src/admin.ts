@@ -16,20 +16,20 @@ export const adminUserRemoveV1 = (token: string, uId: number) => {
   isAuthUserGlobalOwner(token);
 
   const data = getData();
-  for (const user of data.userData) {
-    if (user.uId === uId) {
+  for (const user of data.users) {
+    if (user.id === uId) {
       user.nameFirst = 'Removed';
       user.nameLast = 'user';
     }
   }
-  for (const channel of data.channelData) {
+  for (const channel of data.channels) {
     for (const message of channel.messages) {
       if (message.uId === uId) {
         message.message = 'Removed user';
       }
     }
   }
-  for (const dm of data.dmData) {
+  for (const dm of data.dms) {
     for (const message of dm.messages) {
       if (message.uId === uId) {
         message.message = 'Removed user';
@@ -50,8 +50,8 @@ export const adminUserpermissionChangeV1 = (token: string, uId: number, permissi
   isAuthUserGlobalOwner(token);
 
   const data = getData();
-  for (const user of data.userData) {
-    if (user.uId === uId) {
+  for (const user of data.users) {
+    if (user.id === uId) {
       user.permission = permissionId;
     }
   }

@@ -1,14 +1,5 @@
-import { getData, setData } from './dataStore';
+import { Channel, getData, Member, setData, Token, User, Error, Empty, Message } from './dataStore';
 import { userProfileV2 } from './users';
-import {
-  channelData,
-  channelMessages,
-  member,
-  userData,
-  errorType,
-  channelDetailType,
-  emptyType
-} from './types';
 import { checkStart, getUNIXTime, isUserMemberOfChannel, validateChannel } from './other';
 
 // Channel file (typescript)
@@ -27,15 +18,15 @@ import { checkStart, getUNIXTime, isUserMemberOfChannel, validateChannel } from 
  *  Returns  {}               if the user has successfully joined the channel
  */
 // Writen by Srihari Kannan Jayaraman (z5418120)
-function channelJoinV1 (authUserId: number, channelId: number): emptyType | errorType {
+function channelJoinV1(authUserId: number, channelId: number): Empty | Error {
   const timeStamp = getUNIXTime();
   const data = getData();
-  const channels = data.channelData;
-  const users = data.userData;
+  const channels = data.channels;
+  const users = data.users;
 
   // get channel and check if it's valid
   const currentChannel = channels.find(
-    (channel: channelData) => channel.channelId === channelId
+    (channel: Channel) => channel.id === channelId
   );
   if (currentChannel === undefined) {
     return { error: 'Invalid channelId' };
@@ -44,12 +35,12 @@ function channelJoinV1 (authUserId: number, channelId: number): emptyType | erro
   // Get user from userDetails
   // NOTE: assumes that authUserId is valid
   const currentUser = users.find(
-    (user: userData) => user.uId === authUserId
+    (user: User) => user.id === authUserId
   );
 
   // Check if user is already in channel
   if (currentChannel.allMembers.findIndex(
-    (member: member) => member.uId === authUserId
+    (member: Member) => member.id === authUserId
   ) >= 0) return { error: 'Already in channel' };
 
   // Check whether channel is private and user is a global owner
@@ -60,10 +51,10 @@ function channelJoinV1 (authUserId: number, channelId: number): emptyType | erro
   // Add user to channel
   // Refer to properties individually to avoid displaying password
   // Get token
-  const token: string = data.userTokens.find(tokenObj => tokenObj.authUserId === authUserId).token;
-  currentChannel.allMembers.push((userProfileV2(token, authUserId) as { user: member }).user);
-  for (const user of data.userData) {
-    if (user.uId === authUserId) {
+  const token: string = data.tokens.find((tokenObj: Token) => tokenObj.authUserId === authUserId).token;
+  currentChannel.allMembers.push((userProfileV2(token, authUserId) as { user: Member }).user);
+  for (const user of data.users) {
+    if (user.id === authUserId) {
       const obj = {
         numChannelsJoined: user.userStats.channelsJoined[user.userStats.channelsJoined.length - 1].numChannelsJoined + 1,
         timeStamp: timeStamp,
@@ -76,6 +67,13 @@ function channelJoinV1 (authUserId: number, channelId: number): emptyType | erro
 
   return {};
 }
+
+type channelDetailType = {
+  name: string,
+  isPublic: boolean,
+  ownerMembers: Member[],
+  allMembers: Member[]
+};
 
 /**
  * channelDetailsV1
@@ -90,32 +88,36 @@ function channelJoinV1 (authUserId: number, channelId: number): emptyType | erro
  *    if the user has successfully joined the channel
  */
 // Written by Srihari Kannan Jayaraman (z5418120)
-const channelDetailsV1 = (authUserId: number, channelId: number): channelDetailType | errorType => {
+const channelDetailsV1 = (authUserId: number, channelId: number): channelDetailType | Error => {
   // Fetch from dataStore.js
   const data = getData();
-  const channels = data.channelData;
+  const channels = data.channels;
   // const users = data.userData;
 
   // Find channel[]
-  const currentChannel = channels.find(
-    (channel: channelData) => channel.channelId === channelId
-  );
+  const currentChannel = channels.find(channel => channel.id === channelId);
   if (currentChannel === undefined) return { error: 'Invalid channelId' };
 
   // Check user is in the channel
   // NOTE: Assumes that authUserId is valid
   const currentUser = currentChannel.allMembers.find(
-    (member: member) => member.uId === authUserId
+    (member: Member) => member.id === authUserId
   );
   if (currentUser === undefined) return { error: 'User is not in channel' };
 
   // Return channel details
   return {
-    name: currentChannel.channelName,
+    name: currentChannel.name,
     isPublic: currentChannel.isPublic,
     ownerMembers: currentChannel.ownerMembers,
     allMembers: currentChannel.allMembers
   };
+};
+
+type ChannelMessagesV2Return = {
+  messages: Message[],
+  start: number,
+  end: number,
 };
 
 // Description: returns up to 50 messages of a channel
@@ -136,7 +138,7 @@ const channelDetailsV1 = (authUserId: number, channelId: number): channelDetailT
 //         start: start,
 //         end: -1,
 //     } when end is greater than total number of messages in the channel
-export const channelMessagesV2 = (token: string, channelId: number, start: number): errorType | channelMessages => {
+export const channelMessagesV2 = (token: string, channelId: number, start: number): Error | ChannelMessagesV2Return => {
   if (!validateChannel(channelId)) {
     return { error: 'Invalid channelId' };
   }
@@ -151,8 +153,8 @@ export const channelMessagesV2 = (token: string, channelId: number, start: numbe
   const channelMessages = [];
   let end = start + 50;
   let finishedMessages = false;
-  for (const channel of data.channelData) {
-    if (channel.channelId === channelId) {
+  for (const channel of data.channels) {
+    if (channel.id === channelId) {
       if (end >= channel.messages.length) {
         end = channel.messages.length;
         finishedMessages = true;
@@ -185,32 +187,32 @@ export const channelMessagesV2 = (token: string, channelId: number, start: numbe
             a success is not met
 */
 // Eugene Lee z5164367 15/7/22
-const channelInviteV1 = (authUserId: number, channelId: number, uId: number): emptyType | errorType => {
+const channelInviteV1 = (authUserId: number, channelId: number, uId: number): Empty | Error => {
   const timeStamp = getUNIXTime();
   const data = getData();
-  const users = data.userData;
-  const channels = data.channelData;
+  const users = data.users;
+  const channels = data.channels;
 
-  if (channels.find(c => c.channelId === channelId) === undefined) {
+  if (channels.find(channel => channel.id === channelId) === undefined) {
     return { error: 'Invalid channelId' };
   }
-  const userToInvite = users.find(u => u.uId === uId);
+  const userToInvite = users.find(user => user.id === uId);
   // invalid uID
   if (userToInvite === undefined) {
     return { error: 'Invalid uId' };
   }
-  const channelInvite = channels.find(c => c.channelId === channelId);
-  if (channelInvite.allMembers.find(member => member.uId === uId) !== undefined) {
+  const channelInvite = channels.find(c => c.id === channelId);
+  if (channelInvite.allMembers.find(member => member.id === uId) !== undefined) {
     return { error: 'Invitee is already in the channel' };
   }
-  if (channelInvite.ownerMembers.find(member => member.uId === authUserId) === undefined) {
+  if (channelInvite.ownerMembers.find(member => member.id === authUserId) === undefined) {
     return { error: 'Inviter is not in the channel' };
   }
 
   // Success
   channelInvite.allMembers.push(userToInvite);
-  for (const user of data.userData) {
-    if (user.uId === uId) {
+  for (const user of data.users) {
+    if (user.id === uId) {
       const obj = {
         numChannelsJoined: user.userStats.channelsJoined[user.userStats.channelsJoined.length - 1].numChannelsJoined + 1,
         timeStamp: timeStamp,
@@ -232,35 +234,35 @@ const channelInviteV1 = (authUserId: number, channelId: number, uId: number): em
 // @return {} = if no error
 // @return {error: 'error'} = channelId not valid channel, or authUserId not valid member of channel
 // Eugene Lee z5164367 12/7/22
-function channelLeaveV1(authUserId: number, channelId: number) {
+function channelLeaveV1(authUserId: number, channelId: number): Error | Empty {
   const timeStamp = getUNIXTime();
   const data = getData();
-  const channels = data.channelData;
+  const channels = data.channels;
 
   // Return error if channelId does not refer to a valid channel
-  const channelLeaveFrom = channels.find(c => c.channelId === channelId);
+  const channelLeaveFrom = channels.find(c => c.id === channelId);
   if (channelLeaveFrom === undefined) {
     return { error: 'Invalid channelId' };
   }
   // Return error if channelId is valid, but authUser is not a member of the channel
-  const userLeaving = channelLeaveFrom.allMembers.find(user => user.uId === authUserId);
+  const userLeaving = channelLeaveFrom.allMembers.find(user => user.id === authUserId);
   if (userLeaving === undefined) {
     return { error: 'User is not a channel member' };
   }
 
   // Remove user from channel _Members arrays
   for (let i = 0; i < channelLeaveFrom.allMembers.length; i++) {
-    if (channelLeaveFrom.allMembers[i].uId === userLeaving.uId) {
+    if (channelLeaveFrom.allMembers[i].id === userLeaving.id) {
       channelLeaveFrom.allMembers.splice(i, 1);
     }
   }
   for (let i = 0; i < channelLeaveFrom.ownerMembers.length; i++) {
-    if (channelLeaveFrom.ownerMembers[i].uId === userLeaving.uId) {
+    if (channelLeaveFrom.ownerMembers[i].id === userLeaving.id) {
       channelLeaveFrom.ownerMembers.splice(i, 1);
     }
   }
-  for (const user of data.userData) {
-    if (user.uId === authUserId) {
+  for (const user of data.users) {
+    if (user.id === authUserId) {
       const obj = {
         numChannelsJoined: user.userStats.channelsJoined[user.userStats.channelsJoined.length - 1].numChannelsJoined - 1,
         timeStamp: timeStamp,
@@ -282,10 +284,10 @@ function channelLeaveV1(authUserId: number, channelId: number) {
 // @return {} = if no error
 // @return {error: 'error'} = if errors as below comments
 // Eugene Lee z5164367 12/7/22
-function channelAddOwnerV1(authUserId: number, channelId: number, uId: number) {
+function channelAddOwnerV1(authUserId: number, channelId: number, uId: number): Error | Empty {
   const data = getData();
-  const channelAddOwner = data.channelData.find(c => c.channelId === channelId);
-  const userMakeOwner = data.userData.find(u => u.uId === uId);
+  const channelAddOwner = data.channels.find(c => c.id === channelId);
+  const userMakeOwner = data.users.find(u => u.id === uId);
 
   // Return error if channelId does not refer to a valid channel
   // Return error if uId does not refer to a valid user
@@ -293,24 +295,24 @@ function channelAddOwnerV1(authUserId: number, channelId: number, uId: number) {
   if (userMakeOwner === undefined) return { error: 'Invalid uId' };
 
   // Return error if user of ID 'uId' is not a member of the channel
-  if (channelAddOwner.allMembers.find(u => u.uId === userMakeOwner.uId) === undefined) {
+  if (channelAddOwner.allMembers.find(u => u.id === userMakeOwner.id) === undefined) {
     return { error: 'Selected user is not a channel member' };
   }
   // Return error if user of ID 'uId' is already an owner of the channel
   for (const owner of channelAddOwner.ownerMembers) {
-    if (owner.uId === uId) {
+    if (owner.id === uId) {
       return { error: 'Selected user is already an owner' };
     }
   }
   // Return error if channelId is valid but authUser does not have owner permissions in the channel
-  if (channelAddOwner.ownerMembers.find(u => u.uId === authUserId) === undefined) {
+  if (channelAddOwner.ownerMembers.find(u => u.id === authUserId) === undefined) {
     return { error: 'User is not a channel owner' };
   }
 
   // Make user 'uId' an owner of the channel
-  const newOwner = {
-    uId: uId,
-    handleStr: userMakeOwner.handleStr,
+  const newOwner: Member = {
+    id: uId,
+    handle: userMakeOwner.handle,
     nameFirst: userMakeOwner.nameFirst,
     nameLast: userMakeOwner.nameLast,
     email: userMakeOwner.email,
@@ -330,11 +332,11 @@ function channelAddOwnerV1(authUserId: number, channelId: number, uId: number) {
 // @return {} = if no error
 // @return {error: 'error'} = if errors as below comments
 // Eugene Lee z5164367 12/7/22
-function channelRemoveOwnerV1(authUserId: number, channelId: number, uId: number) {
+function channelRemoveOwnerV1(authUserId: number, channelId: number, uId: number): Error | Empty {
   const data = getData();
-  const channelRemoveOwner = data.channelData.find(c => c.channelId === channelId);
-  const userRemoveOwner = data.userData.find(u => u.uId === uId);
-  const authUser = data.userData.find(u => u.uId === authUserId);
+  const channelRemoveOwner = data.channels.find(c => c.id === channelId);
+  const userRemoveOwner = data.users.find(u => u.id === uId);
+  const authUser = data.users.find(u => u.id === authUserId);
 
   // Return error if channelId does not refer to a valid channel
   // Return error if uId does not refer to a valid user
@@ -342,12 +344,12 @@ function channelRemoveOwnerV1(authUserId: number, channelId: number, uId: number
     return { error: 'Invalid channelId' };
   }
   // Return error if user of ID 'uId' is not an owner of the channel
-  if (channelRemoveOwner.ownerMembers.find(u => u.uId === userRemoveOwner.uId) === undefined) {
+  if (channelRemoveOwner.ownerMembers.find(u => u.id === userRemoveOwner.id) === undefined) {
     return { error: 'Target user is not a channel owner' };
   }
   // Return error if user of ID 'uId' is currently the only owner of the channel
   for (const owner of channelRemoveOwner.ownerMembers) {
-    if (owner.uId === uId && channelRemoveOwner.ownerMembers.length === 1) {
+    if (owner.id === uId && channelRemoveOwner.ownerMembers.length === 1) {
       return { error: 'User is the only channel owner' };
     }
   }
@@ -355,7 +357,7 @@ function channelRemoveOwnerV1(authUserId: number, channelId: number, uId: number
   // Remove owner if authUser has global owner permissions
   if (authUser.permission === 1) {
     for (let i = 0; i < channelRemoveOwner.ownerMembers.length; i++) {
-      if (channelRemoveOwner.ownerMembers[i].uId === uId) {
+      if (channelRemoveOwner.ownerMembers[i].id === uId) {
         channelRemoveOwner.ownerMembers.splice(i, 1);
       }
     }
@@ -364,13 +366,13 @@ function channelRemoveOwnerV1(authUserId: number, channelId: number, uId: number
   }
 
   // Return error if channelId is valid but authUser does not have owner permissions in the channel
-  if (channelRemoveOwner.ownerMembers.find(u => u.uId === authUserId) === undefined) {
+  if (channelRemoveOwner.ownerMembers.find(u => u.id === authUserId) === undefined) {
     return { error: 'authUser does not have owner permissions' };
   }
 
   // Remove user 'uId' as an owner of the channel
   for (let i = 0; i < channelRemoveOwner.ownerMembers.length; i++) {
-    if (channelRemoveOwner.ownerMembers[i].uId === uId) {
+    if (channelRemoveOwner.ownerMembers[i].id === uId) {
       channelRemoveOwner.ownerMembers.splice(i, 1);
     }
   }

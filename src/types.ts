@@ -94,12 +94,8 @@ interface Data {
   dmData: dmData[],
 }
 
-type errorType = {
-  error: string
-};
-
 type HTTPErrorType = {
-  error: {code: number, message: string}
+  error: { code: number, message: string }
 };
 
 type standupStartReturn = {
@@ -117,32 +113,11 @@ type errorToken = {
   error: string
 }
 
-type channelMessages = {
-  messages: message[],
-  start: number,
-  end: number,
-};
-
-type channelDetailType = {
-  name: string,
-  isPublic: boolean,
-  ownerMembers: member[],
-  allMembers: member[]
-};
-
-// TODO: make token non-optional when auth.ts functions are done
-type authUserIdType = {
-  token?: string,
-  authUserId: number
-};
-
 type channelIdType = { channelId: number };
 
 type dmIdType = { dmId: number };
 
 type messageIdType = { messageId: number };
-
-type emptyType = Record<string, never>;
 
 type channelsList = {
   channelId: number,

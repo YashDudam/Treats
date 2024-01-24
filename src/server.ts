@@ -21,7 +21,7 @@ import { standupStartV1, standupActiveV1, standupSendV1 } from './standup';
 import errorHandler from 'middleware-http-errors';
 import HTTPError from 'http-errors';
 import { adminUserRemoveV1, adminUserpermissionChangeV1 } from './admin';
-import { getData, setData } from './dataStore';
+import { getData, setData, Token } from './dataStore';
 import hash from 'object-hash';
 
 // Set up web app, use JSON
@@ -96,8 +96,8 @@ app.post('/auth/logout/v2', (req, res, next) => {
 
     // Find and remove token
     const data = getData();
-    const tokenIndex = data.userTokens.findIndex(tokenObj => tokenObj.token === hash(token));
-    data.userTokens.splice(tokenIndex, 1);
+    const tokenIndex = data.tokens.findIndex((tokenObj: Token) => tokenObj.token === hash(token));
+    data.tokens.splice(tokenIndex, 1);
 
     setData(data);
     return res.json({});
