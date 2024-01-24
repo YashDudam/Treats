@@ -113,8 +113,6 @@ type errorToken = {
   error: string
 }
 
-type messageIdType = { messageId: number };
-
 type requestMessageSendV1Return = {
   result: messageIdType | errorType,
   statusCode: number,
