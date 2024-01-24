@@ -113,18 +113,9 @@ type errorToken = {
   error: string
 }
 
-type channelIdType = { channelId: number };
-
 type dmIdType = { dmId: number };
 
 type messageIdType = { messageId: number };
-
-type channelsList = {
-  channelId: number,
-  name: string,
-};
-
-type channelsListFn = { channels: channelsList[] };
 
 type dmListType = {
   dmId: number,

@@ -1,26 +1,27 @@
-import { getData, setData } from './dataStore';
+import { Channel, Error, getData, Member, setData } from './dataStore';
 import { getUNIXTime } from './other';
-import {
-  channelData,
-  channelIdType,
-  channelsListFn,
-  errorType,
-  member
-} from './types';
 
+type ChannelsList = {
+  channelId: number,
+  name: string,
+};
+
+type ChannelsListWrapper = {
+  channels: ChannelsList[]
+};
 // Function that provides an array of all channels (and associated details)
 // regardless of publicness
 //
 // @params {number} authUserId:     user who is making the request
 // @returns {channels: {array}}:    array of channel objects
-function channelsListallV1(authUserId: number): channelsListFn {
+function channelsListallV1(authUserId: number): ChannelsListWrapper {
   const data = getData();
   const channels = [];
 
-  for (const channel of data.channelData) {
+  for (const channel of data.channels) {
     const currChannel = {
-      channelId: channel.channelId,
-      name: channel.channelName,
+      channelId: channel.id,
+      name: channel.name,
     };
     channels.push(currChannel);
   }
@@ -33,17 +34,17 @@ function channelsListallV1(authUserId: number): channelsListFn {
 //
 // @params {number} authUserId:     user who is making the request
 // @returns {channels: {array}}:    array of channel objects
-function channelsListV1(authUserId: number): channelsListFn {
+function channelsListV1(authUserId: number): ChannelsListWrapper {
   const data = getData();
 
   const channels = [];
 
-  for (const channel of data.channelData) {
+  for (const channel of data.channels) {
     for (const member of channel.allMembers) {
-      if (member.uId === authUserId) {
+      if (member.id === authUserId) {
         const currChannel = {
-          channelId: channel.channelId,
-          name: channel.channelName,
+          channelId: channel.id,
+          name: channel.name,
         };
         channels.push(currChannel);
       }
@@ -53,6 +54,7 @@ function channelsListV1(authUserId: number): channelsListFn {
   return { channels: channels };
 }
 
+type ChannelId = { channelId: number };
 // Function creates a new channel with given name that can be either public
 // or private. The user who creates the channel automatically joins the channel
 //
@@ -61,7 +63,7 @@ function channelsListV1(authUserId: number): channelsListFn {
 // @param {boolean} isPublic:           determines whether channel is public or private
 // @returns {channelId} object:         if channel created with no errors
 // @returns {error: 'error'} object:    if channel name is not 1-20 characters long
-function channelsCreateV1(authUserId: number, name: string, isPublic: boolean): channelIdType | errorType {
+function channelsCreateV1(authUserId: number, name: string, isPublic: boolean): ChannelId | Error {
   const timeStamp = getUNIXTime();
   // Return error if invalid channel name
   if (name.length < 1 || name.length > 20) {
@@ -69,8 +71,8 @@ function channelsCreateV1(authUserId: number, name: string, isPublic: boolean): 
   }
 
   const data = getData();
-  const channels = data.channelData;
-  const users = data.userData;
+  const channels = data.channels;
+  const users = data.users;
 
   // Finds user details of channel creator to populate _Members arrays with userCreator objects
   let uId: number;
@@ -79,24 +81,24 @@ function channelsCreateV1(authUserId: number, name: string, isPublic: boolean): 
   let nameLast: string;
   let email: string;
   for (const user of users) {
-    if (user.uId === authUserId) {
+    if (user.id === authUserId) {
       uId = authUserId;
-      handleStr = user.handleStr;
+      handleStr = user.handle;
       nameFirst = user.nameFirst;
       nameLast = user.nameLast;
       email = user.email;
     }
   }
-  const userCreator: member = {
-    uId: uId,
-    handleStr: handleStr,
+  const userCreator: Member = {
+    id: uId,
+    handle: handleStr,
     nameFirst: nameFirst,
     nameLast: nameLast,
     email: email,
   };
-  const newChannel: channelData = {
-    channelId: channels.length + 1,
-    channelName: name,
+  const newChannel: Channel = {
+    id: channels.length + 1,
+    name: name,
     isPublic: isPublic,
     ownerMembers: [userCreator],
     allMembers: [userCreator],
@@ -111,8 +113,8 @@ function channelsCreateV1(authUserId: number, name: string, isPublic: boolean): 
   // Add newChannel to dataStore
   channels.push(newChannel);
 
-  for (const user of data.userData) {
-    if (user.uId === authUserId) {
+  for (const user of data.users) {
+    if (user.id === authUserId) {
       const obj = {
         numChannelsJoined: user.userStats.channelsJoined[user.userStats.channelsJoined.length - 1].numChannelsJoined + 1,
         timeStamp: timeStamp,
@@ -123,7 +125,7 @@ function channelsCreateV1(authUserId: number, name: string, isPublic: boolean): 
 
   setData(data);
 
-  return { channelId: newChannel.channelId };
+  return { channelId: newChannel.id };
 }
 
 //  This is a helper function used in the server to generate correct output
