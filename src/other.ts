@@ -1,5 +1,4 @@
 import { getData, setData } from './dataStore';
-import { emptyType, errorType } from './types';
 import config from './config.json';
 import HTTPError from 'http-errors';
 import hash from 'object-hash';
@@ -22,8 +21,8 @@ const generateToken = (authUserId: number) => {
   //   newToken = (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000).toString();
   // }
   let i = 0;
-  while (i < data.userTokens.length) {
-    if (hash(newToken) === data.userTokens[i].token) {
+  while (i < data.tokens.length) {
+    if (hash(newToken) === data.tokens[i].token) {
       newToken = (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000).toString();
       i = -1;
     }
@@ -33,7 +32,7 @@ const generateToken = (authUserId: number) => {
     token: hash(newToken + SECRET),
     authUserId: authUserId,
   };
-  data.userTokens.push(Obj);
+  data.tokens.push(Obj);
   setData(data);
 
   return newToken;
@@ -56,8 +55,8 @@ const validateToken = (token: string): boolean => {
   // C coded style of searching through array because idk if the js version works
   let tokenCheck = false;
 
-  for (let i = 0; i < data.userTokens.length; ++i) {
-    if (hash(token + SECRET) === data.userTokens[i].token) {
+  for (let i = 0; i < data.tokens.length; ++i) {
+    if (hash(token + SECRET) === data.tokens[i].token) {
       tokenCheck = true;
     }
   }
@@ -77,8 +76,8 @@ const tokenToUId = (token: string): number | errorType => {
   //   return { error: 'Token does not exist' };
   // }
 
-  const tokenIndex = data.userTokens.findIndex((tokenObject) => tokenObject.token === hash(token + SECRET));
-  return data.userTokens[tokenIndex].authUserId;
+  const tokenIndex = data.tokens.findIndex((tokenObject) => tokenObject.token === hash(token + SECRET));
+  return data.tokens[tokenIndex].authUserId;
   // for (let i = 0; i < data.validTokens.length; ++i){
   //   if(token === data.validTokens[i].token){
   //     return data.validTokens[i].uId
@@ -114,10 +113,10 @@ function clearV1(): emptyType {
   let data = getData();
   // reassign data with cleared userData and channelData keys
   data = {
-    userData: [],
-    channelData: [],
-    userTokens: [],
-    dmData: []
+    users: [],
+    channels: [],
+    tokens: [],
+    dms: []
   };
   // update changes to dataStore.js
   setData(data);
@@ -132,8 +131,8 @@ function clearV1(): emptyType {
 */
 const validateChannel = (channelId: number): boolean => {
   const data = getData();
-  for (const channel of data.channelData) {
-    if (channel.channelId === channelId) {
+  for (const channel of data.channels) {
+    if (channel.id === channelId) {
       return true;
     }
   }
@@ -148,8 +147,8 @@ const validateChannel = (channelId: number): boolean => {
 */
 const validateUserMember = (uId: number, channelId: number) => {
   const data = getData();
-  const channel = data.channelData.find((channel) => channel.channelId === channelId);
-  const user = channel.allMembers.find((member) => member.uId === uId);
+  const channel = data.channels.find((channel) => channel.id === channelId);
+  const user = channel.allMembers.find((member) => member.id === uId);
   if (user === undefined) {
     return false;
   }
@@ -159,12 +158,12 @@ const validateUserMember = (uId: number, channelId: number) => {
 const generateMessageId = (): number => {
   const data = getData();
   const allMessageIds: number[] = [];
-  for (const channel of data.channelData) {
+  for (const channel of data.channels) {
     for (const message of channel.messages) {
       allMessageIds.push(message.messageId);
     }
   }
-  for (const dm of data.dmData) {
+  for (const dm of data.dms) {
     for (const message of dm.messages) {
       allMessageIds.push(message.messageId);
     }
@@ -184,8 +183,8 @@ const getUNIXTime = () => Math.floor(Date.now() / 1000);
 
 const getIndexOfChannel = (channelId: number): number => {
   const data = getData();
-  for (let i = 0; data.channelData[i]; i++) {
-    if (channelId === data.channelData[i].channelId) {
+  for (let i = 0; data.channels[i]; i++) {
+    if (channelId === data.channels[i].id) {
       return i;
     }
   }
@@ -296,8 +295,8 @@ const getIndexOfChannel = (channelId: number): number => {
 
 const isValidDm = (dmId: number) => {
   const data = getData();
-  for (const dm of data.dmData) {
-    if (dm.dmId === dmId) {
+  for (const dm of data.dms) {
+    if (dm.id === dmId) {
       return true;
     }
   }
@@ -307,8 +306,8 @@ const isValidDm = (dmId: number) => {
 const isMemberOfDm = (token: string, dmId: number) => {
   const data = getData();
   const uId = tokenToUId(token);
-  const dm = data.dmData.find((dm) => dm.dmId === dmId);
-  if (dm.members.find((member) => member.uId === uId) !== undefined) {
+  const dm = data.dms.find((dm) => dm.id === dmId);
+  if (dm.members.find((member) => member.id === uId) !== undefined) {
     return true;
   }
   return false;
@@ -316,8 +315,8 @@ const isMemberOfDm = (token: string, dmId: number) => {
 
 const checkStart = (channelId: number, start: number) => {
   const data = getData();
-  for (const channel of data.channelData) {
-    if (channel.channelId === channelId) {
+  for (const channel of data.channels) {
+    if (channel.id === channelId) {
       return start < channel.messages.length;
     }
   }
@@ -326,9 +325,9 @@ const checkStart = (channelId: number, start: number) => {
 const isUserMemberOfChannel = (token: string, channelId: number) => {
   const data = getData();
   const uId = tokenToUId(token);
-  for (const channel of data.channelData) {
-    if (channel.channelId === channelId) {
-      return channel.allMembers.find((member) => member.uId === uId) !== undefined;
+  for (const channel of data.channels) {
+    if (channel.id === channelId) {
+      return channel.allMembers.find((member) => member.id === uId) !== undefined;
     }
   }
 };
@@ -336,15 +335,15 @@ const isUserMemberOfChannel = (token: string, channelId: number) => {
 const isValidMessage = (token: string, messageId: number) => {
   const uId = tokenToUId(token);
   const data = getData();
-  for (const channel of data.channelData) {
-    if (channel.allMembers.find((member) => member.uId === uId) !== undefined) {
+  for (const channel of data.channels) {
+    if (channel.allMembers.find((member) => member.id === uId) !== undefined) {
       if (channel.messages.find((message) => message.messageId === messageId) !== undefined) {
         return true;
       }
     }
   }
-  for (const dm of data.dmData) {
-    if (dm.members.find((member) => member.uId === uId)) {
+  for (const dm of data.dms) {
+    if (dm.members.find((member) => member.id === uId)) {
       if (dm.messages.find((message) => message.messageId === messageId) !== undefined) {
         return true;
       }
@@ -356,14 +355,14 @@ const isValidMessage = (token: string, messageId: number) => {
 const isMessageSentByUser = (token: string, messageId: number) => {
   const uId = tokenToUId(token);
   const data = getData();
-  for (const channel of data.channelData) {
+  for (const channel of data.channels) {
     for (const message of channel.messages) {
       if (message.messageId === messageId) {
         return message.uId === uId;
       }
     }
   }
-  for (const dm of data.dmData) {
+  for (const dm of data.dms) {
     for (const message of dm.messages) {
       if (message.messageId === messageId) {
         return message.uId === uId;
@@ -375,14 +374,14 @@ const isMessageSentByUser = (token: string, messageId: number) => {
 const isUserOwner = (token: string, messageId: number) => {
   const uId = tokenToUId(token);
   const data = getData();
-  for (const channel of data.channelData) {
+  for (const channel of data.channels) {
     if (channel.messages.find((message) => message.messageId === messageId) !== undefined) {
-      return channel.ownerMembers.find((member) => member.uId === uId) !== undefined;
+      return channel.ownerMembers.find((member) => member.id === uId) !== undefined;
     }
   }
-  for (const dm of data.dmData) {
+  for (const dm of data.dms) {
     if (dm.messages.find((message) => message.messageId === messageId) !== undefined) {
-      return dm.ownerMember.uId === uId;
+      return dm.owner.id === uId;
     }
   }
 };
@@ -404,8 +403,8 @@ const throwError = (
 
 const isValidUser = (uId: number) => {
   const data = getData();
-  for (const user of data.userData) {
-    if (uId === user.uId) {
+  for (const user of data.users) {
+    if (uId === user.id) {
       return {};
     }
   }
@@ -415,12 +414,12 @@ const isValidUser = (uId: number) => {
 const isUserOnlyGlobalOwner = (uId: number, permissionId: number) => {
   const data = getData();
   let globalUserCount = 0;
-  for (const user of data.userData) {
+  for (const user of data.users) {
     if (user.permission === 1) {
       globalUserCount++;
     }
   }
-  const user = data.userData.find((user) => user.uId === uId);
+  const user = data.users.find((user) => user.id === uId);
 
   if (user.permission === 1 && permissionId === 2 && globalUserCount === 1) {
     throw HTTPError(400, 'This user is the only global owner and cannot be demoted to user');
@@ -437,7 +436,7 @@ const isPermissionIdValid = (permissionId: number) => {
 
 const userHasPermission = (uId: number, permissionId: number) => {
   const data = getData();
-  const user = data.userData.find((user) => user.uId === uId);
+  const user = data.users.find((user) => user.id === uId);
   if (user.permission === permissionId) {
     throw HTTPError(400, 'User already has the permission');
   }
@@ -446,7 +445,7 @@ const userHasPermission = (uId: number, permissionId: number) => {
 
 const isAuthUserGlobalOwner = (token: string) => {
   const data = getData();
-  const user = data.userData.find((user) => user.uId === tokenToUId(token));
+  const user = data.users.find((user) => user.id === tokenToUId(token));
   if (user.permission !== 1) {
     throw HTTPError(403, 'Authorised user is not a global owner');
   }
@@ -456,12 +455,12 @@ const isAuthUserGlobalOwner = (token: string) => {
 const isOnlyGlobalOwner = (uId: number) => {
   const data = getData();
   let globalUserCount = 0;
-  for (const user of data.userData) {
+  for (const user of data.users) {
     if (user.permission === 1) {
       globalUserCount++;
     }
   }
-  const user = data.userData.find((user) => user.uId === uId);
+  const user = data.users.find((user) => user.id === uId);
   if (globalUserCount === 1 && user.permission === 1) {
     throw HTTPError(400, 'user is the only global owner');
   }
