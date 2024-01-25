@@ -1,8 +1,7 @@
 // Leonidas Kapaniris, z5359385 19/06
-import { getData, setData } from './dataStore';
+import { Empty, Error, getData, Member, setData, User } from './dataStore';
 import { tokenToUId, isValidUser } from './other';
 import validator from 'validator';
-import { emptyType, errorType, member, userStatsV1return } from './types';
 // import {validate_handle} from './auth' //'./auth.ts' when the conversion happens
 
 /*
@@ -47,32 +46,32 @@ import { emptyType, errorType, member, userStatsV1return } from './types';
 //   }
 // }
 
-//
+type UserWrapper = { user: Member };
 // * @param {String} token = the token who is making the request
 // * @param {Number} uId = the id of the user who's details are going to be returned
 // * @returns {object} user = object containing the details about the user
 // * @returns {error: 'error'} if authUserId or uId are not valid
 //
 // Funciton that lists the deatuls about the users
-export const userProfileV2 = (token : string, uId : number): object | errorType => {
+export const userProfileV2 = (token: string, uId: number): UserWrapper | Error => {
   // Creating the checks to see if the uId is valid
   let uIdCheck = false; // uId wanting to get
   const datastore = getData();
-  let user: member;
+  let user: User;
   // check for the authUserId and uId
 
-  for (let i = 0; i < datastore.userData.length; i++) {
-    if (uId === datastore.userData[i].uId) {
+  for (let i = 0; i < datastore.users.length; i++) {
+    if (uId === datastore.users[i].id) {
       uIdCheck = true;
-      user = datastore.userData[i];
+      user = datastore.users[i];
     }
   }
   if (uIdCheck) {
-    const returnUser : member = {
-      uId: user.uId,
+    const returnUser: Member = {
+      id: user.id,
       nameFirst: user.nameFirst,
       nameLast: user.nameLast,
-      handleStr: user.handleStr,
+      handle: user.handle,
       email: user.email
     };
     return { user: returnUser };
@@ -93,14 +92,14 @@ export const userProfileV2 = (token : string, uId : number): object | errorType 
 // @returns {object} users = an object containing an array of users in a compressed format
 export const usersViewAllV1 = (): object => {
   const data = getData();
-  const detail = data.userData;
+  const detail = data.users;
   const userArray = [];
   for (let i = 0; i < detail.length; ++i) {
     const user = compressedUser();
-    user.uId = detail[i].uId;
+    user.id = detail[i].id;
     user.nameFirst = detail[i].nameFirst;
     user.nameLast = detail[i].nameLast;
-    user.handleStr = detail[i].handleStr;
+    user.handle = detail[i].handle;
     user.email = detail[i].email;
 
     userArray.push(user);
@@ -111,12 +110,12 @@ export const usersViewAllV1 = (): object => {
 // helper function that returns an empty user
 // @params {}
 // @returns {object} of type member
-function compressedUser() : member {
+function compressedUser(): Member {
   return {
-    uId: -1,
+    id: -1,
     nameFirst: '',
     nameLast: '',
-    handleStr: '',
+    handle: '',
     email: ''
   };
 }
@@ -128,26 +127,22 @@ function compressedUser() : member {
 *@param {String} nameLast = a string that is goint to be the new last name of the user
 *@returns {object} {} = an empty object as per the specs
 */
-export const userSetNameV1 = (
-  token: string,
-  nameFirst: string,
-  nameLast: string
-): emptyType | errorType => {
+export const userSetNameV1 = (token: string, nameFirst: string, nameLast: string): Empty | Error => {
   const dataStore = getData();
   const uId = tokenToUId(token); // returns the uId
   if (nameFirst.length < 1 || nameFirst.length > 50 || nameLast.length < 1 || nameLast.length > 50) {
     return { error: 'Invalid name length' };
   }
-  for (let i = 0; i < dataStore.userData.length; ++i) {
-    if (uId === dataStore.userData[i].uId) {
-      dataStore.userData[i].nameFirst = nameFirst;
-      dataStore.userData[i].nameLast = nameLast;
+  for (let i = 0; i < dataStore.users.length; ++i) {
+    if (uId === dataStore.users[i].id) {
+      dataStore.users[i].nameFirst = nameFirst;
+      dataStore.users[i].nameLast = nameLast;
       setData(dataStore);
       return {};
     }
   }
   // Unreachable
-  // return { error: 'error' };
+  return { error: 'error' };
 };
 
 /*
@@ -155,7 +150,7 @@ export const userSetNameV1 = (
 *@param {String} email = a string that is going to be the new email of the user
 *@returns {object} {} = an empty object as per the specs
 */
-export const userSetEmailV1 = (token: string, email: string): emptyType | errorType => {
+export const userSetEmailV1 = (token: string, email: string): Empty | Error => {
   const dataStore = getData();
   const uId = tokenToUId(token); // returns the uId
 
@@ -163,15 +158,15 @@ export const userSetEmailV1 = (token: string, email: string): emptyType | errorT
   if (!validator.isEmail(email)) return { error: 'Invalid email' };
   if (checkEmailExist(email)) return { error: 'Email already exists' };
 
-  for (let i = 0; i < dataStore.userData.length; ++i) {
-    if (uId === dataStore.userData[i].uId) {
-      dataStore.userData[i].email = email;
+  for (let i = 0; i < dataStore.users.length; ++i) {
+    if (uId === dataStore.users[i].id) {
+      dataStore.users[i].email = email;
       setData(dataStore);
       return {};
     }
   }
   // Unreachable
-  // return { error: 'error' };
+  return { error: 'error' };
 };
 
 /*
@@ -179,7 +174,7 @@ export const userSetEmailV1 = (token: string, email: string): emptyType | errorT
 *@param {String} handleStr = a string that is going to be the new handleStr of the user
 *@returns {object} {} = an empty object as per the specs
 */
-export const userSetHandleStrV1 = (token: string, handleStr: string): emptyType | errorType => {
+export const userSetHandleStrV1 = (token: string, handleStr: string): Empty | Error => {
   const dataStore = getData();
   const uId = tokenToUId(token); // returns the uIdd
 
@@ -193,15 +188,15 @@ export const userSetHandleStrV1 = (token: string, handleStr: string): emptyType 
 
   // console.log(dataStore, "Hehe")
   // console.log(token, handleStr, uId)
-  for (let i = 0; i < dataStore.userData.length; ++i) {
-    if (uId === dataStore.userData[i].uId) {
-      dataStore.userData[i].handleStr = handleStr;
+  for (let i = 0; i < dataStore.users.length; ++i) {
+    if (uId === dataStore.users[i].id) {
+      dataStore.users[i].handle = handleStr;
       setData(dataStore);
       return {};
     }
   }
   // Unreachable
-  // return { error: 'error' };
+  return { error: 'error' };
 };
 
 // returns true if it exists, false if not
@@ -211,27 +206,50 @@ export const userSetHandleStrV1 = (token: string, handleStr: string): emptyType 
 */
 export const checkEmailExist = (email: string): boolean => {
   const data = getData();
-  for (let i = 0; i < data.userData.length; ++i) {
-    if (email === data.userData[i].email) {
+  for (let i = 0; i < data.users.length; ++i) {
+    if (email === data.users[i].email) {
       return true;
     }
   }
   return false;
 };
 
-export const userStatsV1 = (token: string) => {
+type ChannelJoined = {
+  numChannelsJoined: number,
+  timeStamp: number,
+};
+
+type DmJoined = {
+  numDmsJoined: number,
+  timeStamp: number,
+}
+
+type MessageSent = {
+  numMessagesSent: number,
+  timeStamp: number,
+}
+
+type UserStats = {
+  channelsJoined: ChannelJoined[],
+  dmsJoined: DmJoined[],
+  messagesSent: MessageSent[],
+  involvementRate: number,
+}
+
+type UserStatsWrapper = { userStats: UserStats };
+export const userStatsV1 = (token: string): UserStatsWrapper => {
   const uId = tokenToUId(token) as number;
   isValidUser(uId);
 
-  const userStats: userStatsV1return = {
+  const userStats: UserStats = {
     channelsJoined: [],
     dmsJoined: [],
     messagesSent: [],
     involvementRate: 0,
   };
   const data = getData();
-  for (const user of data.userData) {
-    if (user.uId === uId) {
+  for (const user of data.users) {
+    if (user.id === uId) {
       userStats.channelsJoined = user.userStats.channelsJoined;
       userStats.dmsJoined = user.userStats.dmsJoined;
       userStats.messagesSent = user.userStats.messagesSent;
@@ -240,13 +258,13 @@ export const userStatsV1 = (token: string) => {
   const numChannelsJoined = userStats.channelsJoined[userStats.channelsJoined.length - 1].numChannelsJoined;
   const numDmsJoined = userStats.dmsJoined[userStats.dmsJoined.length - 1].numDmsJoined;
   const numMessagesSent = userStats.messagesSent[userStats.messagesSent.length - 1].numMessagesSent;
-  const numChannels = data.channelData.length;
-  const numDms = data.dmData.length;
+  const numChannels = data.channels.length;
+  const numDms = data.dms.length;
   let numMessages = 0;
-  for (const channel of data.channelData) {
+  for (const channel of data.channels) {
     numMessages += channel.messages.length;
   }
-  for (const dm of data.dmData) {
+  for (const dm of data.dms) {
     numMessages += dm.messages.length;
   }
 
