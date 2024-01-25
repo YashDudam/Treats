@@ -1,4 +1,4 @@
-import { getData, setData } from './dataStore';
+import { Empty, Error, getData, setData } from './dataStore';
 import config from './config.json';
 import HTTPError from 'http-errors';
 import hash from 'object-hash';
@@ -70,7 +70,7 @@ const validateToken = (token: string): boolean => {
 *@param {String} token = a unique 5 length string making the request. Belongs to a user in session
 *@returns {Number} uId = the uId associated with the user in the session
 */
-const tokenToUId = (token: string): number | errorType => {
+const tokenToUId = (token: string): number | Error => {
   const data = getData();
   // if (!validateToken(token)) {
   //   return { error: 'Token does not exist' };
@@ -109,7 +109,7 @@ const tokenToUId = (token: string): number | errorType => {
 // Return Value:
 //   returns {}
 //
-function clearV1(): emptyType {
+function clearV1(): Empty {
   let data = getData();
   // reassign data with cleared userData and channelData keys
   data = {
