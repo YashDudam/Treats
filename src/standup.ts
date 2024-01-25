@@ -16,7 +16,7 @@ import { messageSendV1 } from './message';
 // Eugene Lee z5164367 5/8/22
 function standupStartV1(channelId: number, length: number, token: string) {
   const data = getData();
-  const channel = data.channelData.find(c => c.channelId === channelId);
+  const channel = data.channels.find(c => c.id === channelId);
   const authUserId = tokenToUId(token);
 
   // Return error if invalid channelId
@@ -32,7 +32,7 @@ function standupStartV1(channelId: number, length: number, token: string) {
     return { error: { code: 400, message: 'An active standup is already running in channel' } };
   }
   // Return error if valid channelId but authUser is not a member of channel
-  if (channel.allMembers.find(m => m.uId === authUserId) === undefined) {
+  if (channel.allMembers.find(m => m.id === authUserId) === undefined) {
     return { error: { code: 403, message: 'Valid channelId but authUser is not a member of channel' } };
   }
 
@@ -80,7 +80,7 @@ function standupStartV1(channelId: number, length: number, token: string) {
 // Eugene Lee z5164367 5/8/22
 function standupActiveV1(channelId: number, token: string) {
   const data = getData();
-  const channel = data.channelData.find(c => c.channelId === channelId);
+  const channel = data.channels.find(c => c.id === channelId);
   const authUserId = tokenToUId(token);
 
   // Return error if invalid channelId
@@ -88,7 +88,7 @@ function standupActiveV1(channelId: number, token: string) {
     return { error: { code: 400, message: 'Invalid channelId' } };
   }
   // Return error if valid channelId but authUser is not a member of channel
-  if (channel.allMembers.find(m => m.uId === authUserId) === undefined) {
+  if (channel.allMembers.find(m => m.id === authUserId) === undefined) {
     return { error: { code: 403, message: 'Valid channelId but authUser is not a member of channel' } };
   }
 
@@ -112,9 +112,9 @@ function standupActiveV1(channelId: number, token: string) {
 // Eugene Lee z5164367 5/8/22
 function standupSendV1(channelId: number, message: string, token: string) {
   const data = getData();
-  const channel = data.channelData.find(c => c.channelId === channelId);
+  const channel = data.channels.find(c => c.id === channelId);
   const authUserId = tokenToUId(token);
-  const authUser = data.userData.find(u => u.uId === authUserId);
+  const authUser = data.users.find(u => u.id === authUserId);
 
   // Return error if invalid channelId
   if (channel === undefined) {
@@ -129,13 +129,13 @@ function standupSendV1(channelId: number, message: string, token: string) {
     return { error: { code: 400, message: 'No active standup running in channel' } };
   }
   // Return error if valid channelId but authUser is not a member of channel
-  if (channel.allMembers.find(m => m.uId === authUserId) === undefined) {
+  if (channel.allMembers.find(m => m.id === authUserId) === undefined) {
     return { error: { code: 403, message: 'Valid channelId but authUser is not a member of channel' } };
   }
 
   // Push message to standupMessages[]
   const standupMessage = {
-    userHandle: authUser.handleStr,
+    userHandle: authUser.handle,
     message: message,
   };
   channel.standup.standupMessages.push(standupMessage);
