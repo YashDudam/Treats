@@ -6,7 +6,6 @@ import cors from 'cors';
 import { dmCreateV1, dmDetailsV1, dmLeaveV1, dmListV1, dmMessagesV1, dmRemoveV1 } from './dm';
 import { validateToken, tokenToUId, clearV1, throwError } from './other';
 import { authLoginV1, authRegisterV1 } from './auth';
-import { errorToken, errorType, member, HTTPErrorType, standupStartReturn, standupActiveReturn } from './types';
 import {
   userProfileV2, usersViewAllV1, userSetNameV1,
   userSetEmailV1, userSetHandleStrV1, userStatsV1
@@ -51,9 +50,9 @@ app.get('/echo', (req, res, next) => {
 app.post('/auth/login/v3', (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const id = authLoginV1(email, password) as errorToken;
+    const id = authLoginV1(email, password);
 
-    if (id.error === 'error') throw HTTPError(400, 'Invalid email or password');
+    if ('error' in id) throw HTTPError(400, 'Invalid email or password');
 
     // Add token to header
     res.set('token', id.token);
@@ -73,9 +72,9 @@ app.post('/auth/register/v3', (req, res, next) => {
     const nameFirst = req.body.nameFirst as string;
     const nameLast = req.body.nameLast as string;
 
-    const id = authRegisterV1(email, password, nameFirst, nameLast) as errorToken;
+    const id = authRegisterV1(email, password, nameFirst, nameLast);
 
-    if (id.error === 'error') throw HTTPError(400, 'Invalid details');
+    if ('error' in id) throw HTTPError(400, 'Invalid details');
 
     // Add token to header
     res.set('token', id.token);
@@ -116,7 +115,7 @@ app.post('/channels/create/v3', (req, res, next) => {
     const id = tokenToUId(token) as number;
     const channelId = channelsCreateV1(id, name, isPublic);
     // https://blog.logrocket.com/how-to-use-type-guards-typescript/
-    if ('error' in channelId) throw HTTPError(400, (channelId as errorType).error);
+    if ('error' in channelId) throw HTTPError(400, channelId.error);
     return res.json(channelId);
   } catch (err) {
     next(err);
@@ -305,7 +304,7 @@ app.get('/user/profile/v3', (req, res, next) => {
     const token = req.header('token');
     if (!validateToken(token)) throw HTTPError(403, 'Invalid token');
     const uId = parseInt(req.query.uId as string) as number;
-    const profile = userProfileV2(token, uId) as member;
+    const profile = userProfileV2(token, uId);
     if ('error' in profile) throw HTTPError(400, 'Invalid uId');
     return res.json(profile);
   } catch (err) {
@@ -585,7 +584,7 @@ app.post('/standup/start/v1', (req, res, next) => {
     if (!validateToken(token)) throw HTTPError(403, 'Invalid token');
     const channelId = req.body.channelId as number;
     const length = req.body.length as number;
-    const result = standupStartV1(channelId, length, token) as standupStartReturn | HTTPErrorType;
+    const result = standupStartV1(channelId, length, token);
     if ('error' in result) {
       throw HTTPError(result.error.code, result.error.message);
     }
@@ -616,7 +615,7 @@ app.get('/standup/active/v1', (req, res, next) => {
     const token = req.header('token');
     if (!validateToken(token)) throw HTTPError(403, 'Invalid token');
     const channelId = parseInt(req.query.channelId as string);
-    const result = standupActiveV1(channelId, token) as standupActiveReturn | HTTPErrorType;
+    const result = standupActiveV1(channelId, token);
     if ('error' in result) {
       throw HTTPError(result.error.code, result.error.message);
     }
