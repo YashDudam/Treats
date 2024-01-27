@@ -100,6 +100,15 @@ export function getData(): Data {
 }
 
 // Use setData(newData) to pass in the entire data object, with modifications made
-export function setData(newData: Data) {
-  fs.writeFileSync('dataStore.json', JSON.stringify(newData), { flag: 'w' });
+export function setData(data: Data) {
+  fs.writeFileSync('dataStore.json', JSON.stringify(data), { flag: 'w' });
+}
+
+export function clear() {
+  setData({
+    users: [],
+    channels: [],
+    tokens: [],
+    dms: []
+  });
 }

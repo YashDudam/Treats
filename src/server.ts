@@ -4,8 +4,8 @@ import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
 import { dmCreateV1, dmDetailsV1, dmLeaveV1, dmListV1, dmMessagesV1, dmRemoveV1 } from './dm';
-import { validateToken, tokenToUId, clearV1, throwError } from './other';
-import { authLoginV1, authRegisterV1 } from './auth';
+import { validateToken, tokenToUId, throwError } from './other';
+import { authRegisterV3 } from './auth';
 import {
   userProfileV2, usersViewAllV1, userSetNameV1,
   userSetEmailV1, userSetHandleStrV1, userStatsV1
@@ -20,7 +20,7 @@ import { standupStartV1, standupActiveV1, standupSendV1 } from './standup';
 import errorHandler from 'middleware-http-errors';
 import HTTPError from 'http-errors';
 import { adminUserRemoveV1, adminUserpermissionChangeV1 } from './admin';
-import { getData, setData, Token } from './dataStore';
+import { clear, getData, setData, Token } from './dataStore';
 import hash from 'object-hash';
 
 // Set up web app, use JSON
@@ -47,42 +47,34 @@ app.get('/echo', (req, res, next) => {
 
 // ITERATION 2 functions (updated)
 // Auth
-app.post('/auth/login/v3', (req, res, next) => {
-  try {
-    const { email, password } = req.body;
-    const id = authLoginV1(email, password);
-
-    if ('error' in id) throw HTTPError(400, 'Invalid email or password');
-
-    // Add token to header
-    res.set('token', id.token);
-    return res.json({
-      token: id.token,
-      authUserId: id.authUserId
-    });
-  } catch (err) {
-    next(err);
-  }
-});
+// app.post('/auth/login/v3', (req, res, next) => {
+//   try {
+//     const { email, password } = req.body;
+//     const id = authLoginV1(email, password);
+//
+//     if ('error' in id) throw HTTPError(400, 'Invalid email or password');
+//
+//     // Add token to header
+//     res.set('token', id.token);
+//     return res.json({
+//       token: id.token,
+//       authUserId: id.authUserId
+//     });
+//   } catch (err) {
+//     next(err);
+//   }
+// });
 
 app.post('/auth/register/v3', (req, res, next) => {
   try {
-    const email = req.body.email as string;
-    const password = req.body.password as string;
-    const nameFirst = req.body.nameFirst as string;
-    const nameLast = req.body.nameLast as string;
+    const { email, password, nameFirst, nameLast } = req.body;
+    const id = authRegisterV3(email, password, nameFirst, nameLast);
 
-    const id = authRegisterV1(email, password, nameFirst, nameLast);
+    if ('error' in id) {
+      throw HTTPError(400, id.error);
+    }
 
-    if ('error' in id) throw HTTPError(400, 'Invalid details');
-
-    // Add token to header
-    res.set('token', id.token);
-
-    return res.json({
-      authUserId: id.authUserId,
-      token: id.token
-    });
+    return res.json(id);
   } catch (err) {
     next(err);
   }
@@ -353,8 +345,8 @@ app.put('/user/profile/sethandle/v2', (req, res, next) => {
 });
 
 // Clear
-app.delete('/clear/v1', (req, res, next) => {
-  return res.json(clearV1());
+app.delete('/clear/v1', (req, res) => {
+  return res.json(clear());
 });
 
 // Message

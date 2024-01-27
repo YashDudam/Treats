@@ -4,6 +4,9 @@ describe('auth/register/v3', () => {
   beforeEach(() => {
     requestClear();
   });
+  afterEach(() => {
+    requestClear();
+  });
 
   test('everything valid without any changes to the handle required.', () => {
     const res = requestAuthRegister('darth.vader@gmail.com', 'nooooooooo', 'darth', 'vader');

@@ -101,29 +101,6 @@ const tokenToUId = (token: string): number | Error => {
   setData(data);
 }; */
 
-// Description: Clears the userData and channelData keys in dataStore
-//
-// Arguments:
-//   void
-//
-// Return Value:
-//   returns {}
-//
-function clearV1(): Empty {
-  let data = getData();
-  // reassign data with cleared userData and channelData keys
-  data = {
-    users: [],
-    channels: [],
-    tokens: [],
-    dms: []
-  };
-  // update changes to dataStore.js
-  setData(data);
-  // return empty object
-  return {};
-}
-
 // given a channelId, checks whether the channel exists or not
 /*
 * @param {number} channelId = the channelId of the given channel
@@ -468,7 +445,6 @@ const isOnlyGlobalOwner = (uId: number) => {
 };
 
 export {
-  clearV1,
   generateToken,
   validateToken,
   tokenToUId,
