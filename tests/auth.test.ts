@@ -7,24 +7,30 @@ describe('auth/register/v3', () => {
 
   test('everything valid without any changes to the handle required.', () => {
     const res = requestAuthRegister('darth.vader@gmail.com', 'nooooooooo', 'darth', 'vader');
-    expect(res.body.token).toBe('string');
-    expect(res.body.authUserId).toBe('number');
+    expect(res.body).toStrictEqual({
+      token: expect.any(String),
+      authUserId: expect.any(Number)
+    });
     expect(res.status).toBe(200);
   });
 
   test('handle casted to lowercase alphanumeric and longer than 20 characters but handle is taken', () => {
     requestAuthRegister('darth.vader@gmail.com', 'yessssssss', 'bigman', 'vadey');
     const res = requestAuthRegister('darth2.vader@gmail.com', 'noooooooo', 'bigman', 'vadey');
-    expect(res.body.token).toBe('string');
-    expect(res.body.authUserId).toBe('number');
+    expect(res.body).toStrictEqual({
+      token: expect.any(String),
+      authUserId: expect.any(Number)
+    });
     expect(res.status).toBe(200);
   });
 
   test('handle casted to lowercase alphanumeric, needs to be shortened to 20 and handle is taken but adding a number exceeds 20 characters', () => {
     requestAuthRegister('darth.vader@gmail.com', 'yessssssss', 'bigmandarth', 'vadeyboy123');
     const res = requestAuthRegister('darth2.vader@gmail.com', 'noooooooo', 'bigmandarth', 'vadeyboy123');
-    expect(res.body.token).toBe('string');
-    expect(res.body.authUserId).toBe('number');
+    expect(res.body).toStrictEqual({
+      token: expect.any(String),
+      authUserId: expect.any(Number)
+    });
     expect(res.status).toBe(200);
   });
 
