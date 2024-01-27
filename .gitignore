@@ -5,6 +5,7 @@ coverage/
 .nyc_output
 results/
 package-lock.json
+dataStore.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -171,3 +172,4 @@ Thumbs.db
 # Ignore built ts files
 dist/**/*
 .test.backup
+.backup
