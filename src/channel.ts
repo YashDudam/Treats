@@ -56,10 +56,10 @@ function channelJoinV1(authUserId: number, channelId: number): Empty | Error {
   for (const user of data.users) {
     if (user.id === authUserId) {
       const obj = {
-        numChannelsJoined: user.userStats.channelsJoined[user.userStats.channelsJoined.length - 1].numChannelsJoined + 1,
+        numChannelsJoined: user.stats.channelsJoined[user.stats.channelsJoined.length - 1].numChannelsJoined + 1,
         timeStamp: timeStamp,
       };
-      user.userStats.channelsJoined.push(obj);
+      user.stats.channelsJoined.push(obj);
     }
   }
   // Set changes in dataStore.js
@@ -214,10 +214,10 @@ const channelInviteV1 = (authUserId: number, channelId: number, uId: number): Em
   for (const user of data.users) {
     if (user.id === uId) {
       const obj = {
-        numChannelsJoined: user.userStats.channelsJoined[user.userStats.channelsJoined.length - 1].numChannelsJoined + 1,
+        numChannelsJoined: user.stats.channelsJoined[user.stats.channelsJoined.length - 1].numChannelsJoined + 1,
         timeStamp: timeStamp,
       };
-      user.userStats.channelsJoined.push(obj);
+      user.stats.channelsJoined.push(obj);
     }
   }
   setData(data);
@@ -264,10 +264,10 @@ function channelLeaveV1(authUserId: number, channelId: number): Error | Empty {
   for (const user of data.users) {
     if (user.id === authUserId) {
       const obj = {
-        numChannelsJoined: user.userStats.channelsJoined[user.userStats.channelsJoined.length - 1].numChannelsJoined - 1,
+        numChannelsJoined: user.stats.channelsJoined[user.stats.channelsJoined.length - 1].numChannelsJoined - 1,
         timeStamp: timeStamp,
       };
-      user.userStats.channelsJoined.push(obj);
+      user.stats.channelsJoined.push(obj);
     }
   }
   setData(data);

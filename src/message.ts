@@ -43,10 +43,10 @@ export const messageSenddmV1 = (token: string, dmId: number, message: string): M
   for (const user of data.users) {
     if (user.id === tokenToUId(token)) {
       const obj = {
-        numMessagesSent: user.userStats.messagesSent[user.userStats.messagesSent.length - 1].numMessagesSent + 1,
+        numMessagesSent: user.stats.messagesSent[user.stats.messagesSent.length - 1].numMessagesSent + 1,
         timeStamp: timeStamp,
       };
-      user.userStats.messagesSent.push(obj);
+      user.stats.messagesSent.push(obj);
     }
   }
 
@@ -84,10 +84,10 @@ export const messageSendV1 = (token: string, channelId: number, message: string)
   for (const user of data.users) {
     if (user.id === authUserId) {
       const obj = {
-        numMessagesSent: user.userStats.messagesSent[user.userStats.messagesSent.length - 1].numMessagesSent + 1,
+        numMessagesSent: user.stats.messagesSent[user.stats.messagesSent.length - 1].numMessagesSent + 1,
         timeStamp: timeStamp,
       };
-      user.userStats.messagesSent.push(obj);
+      user.stats.messagesSent.push(obj);
     }
   }
 
@@ -158,10 +158,10 @@ export const messageRemoveV1 = (token: string, messageId: number): Empty | Error
   for (const user of data.users) {
     if (user.id === tokenToUId(token)) {
       const obj = {
-        numMessagesSent: user.userStats.messagesSent[user.userStats.messagesSent.length - 1].numMessagesSent - 1,
+        numMessagesSent: user.stats.messagesSent[user.stats.messagesSent.length - 1].numMessagesSent - 1,
         timeStamp: timeStamp,
       };
-      user.userStats.messagesSent.push(obj);
+      user.stats.messagesSent.push(obj);
     }
   }
 

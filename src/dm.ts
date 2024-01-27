@@ -89,10 +89,10 @@ const dmCreateV1 = (authUserId: number, uIds: number[]): DmId | Error => {
     for (const user of data.users) {
       if (user.id === uId) {
         const obj = {
-          numDmsJoined: user.userStats.dmsJoined[user.userStats.dmsJoined.length - 1].numDmsJoined + 1,
+          numDmsJoined: user.stats.dmsJoined[user.stats.dmsJoined.length - 1].numDmsJoined + 1,
           timeStamp: timeStamp,
         };
-        user.userStats.dmsJoined.push(obj);
+        user.stats.dmsJoined.push(obj);
       }
     }
   }
@@ -251,10 +251,10 @@ const dmLeaveV1 = (authUserId: number, dmId: number): Empty | Error => {
   for (const user of data.users) {
     if (user.id === authUserId) {
       const obj = {
-        numDmsJoined: user.userStats.dmsJoined[user.userStats.dmsJoined.length - 1].numDmsJoined - 1,
+        numDmsJoined: user.stats.dmsJoined[user.stats.dmsJoined.length - 1].numDmsJoined - 1,
         timeStamp: timeStamp,
       };
-      user.userStats.dmsJoined.push(obj);
+      user.stats.dmsJoined.push(obj);
     }
   }
   setData(data);
@@ -306,10 +306,10 @@ function dmRemoveV1(authUserId: number, dmId: number) {
     for (const user of data.users) {
       if (user.id === uId) {
         const obj = {
-          numDmsJoined: user.userStats.dmsJoined[user.userStats.dmsJoined.length - 1].numDmsJoined - 1,
+          numDmsJoined: user.stats.dmsJoined[user.stats.dmsJoined.length - 1].numDmsJoined - 1,
           timeStamp: timeStamp,
         };
-        user.userStats.dmsJoined.push(obj);
+        user.stats.dmsJoined.push(obj);
       }
     }
   }

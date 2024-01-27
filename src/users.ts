@@ -250,9 +250,9 @@ export const userStatsV1 = (token: string): UserStatsWrapper => {
   const data = getData();
   for (const user of data.users) {
     if (user.id === uId) {
-      userStats.channelsJoined = user.userStats.channelsJoined;
-      userStats.dmsJoined = user.userStats.dmsJoined;
-      userStats.messagesSent = user.userStats.messagesSent;
+      userStats.channelsJoined = user.stats.channelsJoined;
+      userStats.dmsJoined = user.stats.dmsJoined;
+      userStats.messagesSent = user.stats.messagesSent;
     }
   }
   const numChannelsJoined = userStats.channelsJoined[userStats.channelsJoined.length - 1].numChannelsJoined;

@@ -30,7 +30,7 @@ export type User = {
   email: string;
   password: string;
   permission: number;
-  userStats: UserStats;
+  stats: UserStats;
 };
 
 export type Member = {

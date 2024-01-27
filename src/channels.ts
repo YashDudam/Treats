@@ -116,10 +116,10 @@ function channelsCreateV1(authUserId: number, name: string, isPublic: boolean): 
   for (const user of data.users) {
     if (user.id === authUserId) {
       const obj = {
-        numChannelsJoined: user.userStats.channelsJoined[user.userStats.channelsJoined.length - 1].numChannelsJoined + 1,
+        numChannelsJoined: user.stats.channelsJoined[user.stats.channelsJoined.length - 1].numChannelsJoined + 1,
         timeStamp: timeStamp,
       };
-      user.userStats.channelsJoined.push(obj);
+      user.stats.channelsJoined.push(obj);
     }
   }
 
