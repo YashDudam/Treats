@@ -18,7 +18,7 @@ describe('auth/register/v3', () => {
   });
 
   test('handle casted to lowercase alphanumeric and longer than 20 characters but handle is taken', () => {
-    requestAuthRegister('darth.vader@gmail.com', 'yessssssss', 'bigman', 'vadey');
+    requestAuthRegister('darth.vader@gmail.com', 'yessssssss', 'bigm@n', 'v@d3y');
     const res = requestAuthRegister('darth2.vader@gmail.com', 'noooooooo', 'bigman', 'vadey');
     expect(res.body).toStrictEqual({
       token: expect.any(String),
