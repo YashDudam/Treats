@@ -4,10 +4,11 @@
 // The functions in this file handle authorisation
 import { Error, getData, setData, Stats } from './dataStore';
 import validator from 'validator';
-import objectHash from 'object-hash';
+import hash from 'object-hash';
 
 const OWNER = 1;
 const MEMBER = 2;
+const SECRET = 'YashHariLeonJamesEugeneCRUNCHIE';
 
 type AuthUserIdWrapper = {
   token: string,
@@ -44,13 +45,19 @@ export function authRegisterV3(email: string, password: string, nameFirst: strin
     permission: data.users.length === 0 ? OWNER : MEMBER,
     stats: initUserStats()
   };
-  const token = objectHash(user);
+  const token = generateToken();
 
   data.users.push(user);
+  data.tokens.push({ token, authUserId });
 
   setData(data);
 
   return { token, authUserId };
+}
+
+// vulnerable to hash collisions because it doesn't check that a token has been taken
+function generateToken() {
+  return hash(Math.random().toString() + SECRET);
 }
 
 function generateHandle(nameFirst: string, nameLast: string): string {
