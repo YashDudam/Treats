@@ -5,7 +5,7 @@
     "ts-watch": "tsc --noImplicitAny --watch",
     "ts-node": "ts-node",
     "nodemon": "nodemon",
-    "monitor": "nodemon src/server.ts",
+    "monitor": "nodemon src/server.ts --ignore dataStore.json",
     "lint": "eslint src/**.ts",
     "lint-fix": "eslint --fix src/**.ts",
     "start": "ts-node src/server.ts",
