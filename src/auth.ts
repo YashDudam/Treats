@@ -1,215 +1,81 @@
 // Authorisation file
-// auth.js
+// auth.ts
 //
-// This program was first modified by James White (z5363399)
-// on 7/06/2022
-//
-// The use of this file is not known yet
-import { Error, getData, setData, User } from './dataStore';
+// The functions in this file handle authorisation
+import { Error, getData, setData, Stats } from './dataStore';
 import validator from 'validator';
-import { generateToken, SECRET, getUNIXTime } from './other';
-import hash from 'object-hash';
+import objectHash from 'object-hash';
 
-type AuthUserId = {
+const OWNER = 1;
+const MEMBER = 2;
+
+type AuthUserIdWrapper = {
   token: string,
   authUserId: number
 };
 
-// authLoginV1: This function returns a user if the entered
-// email and password are valid
-/* Arguments:
-    email: string - valid email entered by user
-    password: string - valid password entered by user
-Return Value:
-    Returns User Id (integer) if input is valid
-*/
-function authLoginV1(email: string, password: string): AuthUserId | Error {
+export function authRegisterV3(email: string, password: string, nameFirst: string, nameLast: string): AuthUserIdWrapper | Error {
+  if (!validator.isEmail(email)) return { error: 'invalid email' };
+  if (password.length < 6) return { error: 'password is too short' };
+  if (nameFirst.length === 0 || nameFirst.length >= 50) return { error: 'first name must be between 1 and 50 characters inclusive' };
+  if (nameLast.length === 0 || nameLast.length >= 50) return { error: 'first name must be between 1 and 50 characters inclusive' };
+
   const data = getData();
-  const userData = data.users;
 
-  // checks for valid user and password then returns user
-
-  for (const i of userData) {
-    if (i.email === email) {
-      if (i.password === hash(password + SECRET)) {
-        return {
-          token: generateToken(i.id),
-          authUserId: i.id
-        };
-      }
+  // if (data.users.find(user => user.email === email)) return { error: 'email already in use' };
+  console.log(data);
+  for (const user of data.users) {
+    if (user.email === email) {
+      return { error: 'email already in use' };
     }
   }
-  return { error: 'error' };
-}
 
-// authRegisterV1: This function registers a new user
-/* Arguments:
-    email: string - valid email entered by user
-    password: string - valid password entered by user
-    nameFirst: string - First name entered by user
-    nameLast: string - Last name entered by user
-Return Value:
-    Returns New User Id (integer) if input is valid
-*/
-function authRegisterV1(email: string, password: string, nameFirst: string, nameLast: string): Error | AuthUserId {
-  const timeStamp = getUNIXTime();
-  // checking for input errors
-  if (!authRegInputErrors(email, password, nameFirst, nameLast)) {
-    return { error: 'error' };
-  }
-  const data = getData();
-  const userData = data.users;
-
-  // generate Id
-  const newId = userData.length + 1;
-
-  // create newUser
-  const newUser: User = {
-    id: newId,
+  const authUserId = data.users.length + 1;
+  const user = {
+    id: authUserId,
     handle: generateHandle(nameFirst, nameLast),
-    email: email,
-    password: hash(password + SECRET),
     nameFirst: nameFirst,
     nameLast: nameLast,
-    permission: userData.length === 0 ? 1 : 2,
-    userStats: {
-      channelsJoined: [
-        {
-          numChannelsJoined: 0,
-          timeStamp: timeStamp,
-        },
-      ],
-      dmsJoined: [
-        {
-          numDmsJoined: 0,
-          timeStamp: timeStamp,
-        },
-      ],
-      messagesSent: [
-        {
-          numMessagesSent: 0,
-          timeStamp: timeStamp,
-        },
-      ],
-    }
+    email: email,
+    password: password,
+    permission: data.users.length === 0 ? OWNER : MEMBER,
+    stats: initUserStats()
   };
+  const token = objectHash(user);
 
-  // check if new user is the first to apply owner permission
-  // otherwise apply member permission
+  data.users.push(user);
+  console.log(data);
 
-  addNewUser(newUser);
-
-  const token = generateToken(newUser.id);
-
-  return { authUserId: newId, token: token };
-}
-
-// authRegInputErrors: This function checks for input errors in authRegisterV1
-function authRegInputErrors(email: string, password: string, nameFirst: string, nameLast: string): boolean {
-  if (!validator.isEmail(email)) {
-    return false;
-  } else if (password.length < 6) {
-    return false;
-  } else if (nameFirst.length < 1 || nameFirst.length > 50) {
-    return false;
-  } else if (nameLast.length < 1 || nameLast.length > 50) {
-    return false;
-  }
-
-  const data = getData();
-  const userData = data.users;
-
-  for (const i of userData) {
-    if (i.email === email) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-// generateHandle: This function generates a new handle in the authRegisterV1 function
-function generateHandle(nameFirst: string, nameLast: string): string {
-  let handle = nameFirst + nameLast;
-  handle = handle.toLowerCase();
-  handle = handle.replace(/[^a-z0-9]+/g, '');
-  handle = handle.slice(0, 20);
-
-  const data = getData();
-  const userData = data.users;
-  let largestHandle: number | string = -1;
-  let handleNum: number | string = -1;
-
-  // check if there are handle duplicates
-  // if there are, increase the handle number by one and add to end of handle
-  for (const i of userData) {
-    const handleCompare = i.handle.slice(0, handle.length);
-    if (handleCompare === handle) {
-      handleNum = i.handle.slice(handle.length, 25);
-      handleNum = parseInt(handleNum as string);
-      if (handleNum > largestHandle) {
-        largestHandle = handleNum;
-      }
-    }
-  }
-
-  if (largestHandle === -1 && isNaN(handleNum)) {
-    largestHandle = '0';
-  } else if (largestHandle > -1) {
-    largestHandle++;
-    largestHandle = largestHandle.toString();
-  } else {
-    largestHandle = '';
-  }
-
-  handle = handle + largestHandle;
-  return handle;
-}
-
-// compareAuthUserId: This function is used to order the datastore by authUserId
-function compareAuthUserId(a: any, b: any) {
-  return a.authUserId - b.authUserId;
-}
-
-// addNewUser: This function adds a new user to the datastore and orders the store
-function addNewUser(newUser: any) {
-  const data = getData();
-  const userData = data.users;
-  userData.push(newUser);
-
-  // sorts the user data array
-  userData.sort(compareAuthUserId);
-
-  data.users = userData;
   setData(data);
+
+  return { token, authUserId };
 }
 
-// export function validateHandle(handle: string) {
-//   const data = getData();
-//   const userData = data.userData;
-//   let largestHandle: number | string = -1;
-//   let handleNum: number | string = -1;
+function generateHandle(nameFirst: string, nameLast: string): string {
+  const handle = (nameFirst + nameLast).toLowerCase().replace(/[^a-z0-9]/gi, '');
 
-//   for (const i of userData) {
-//     const handleCompare = i.handleStr.slice(0, handle.length);
-//     if (handleCompare === handle) {
-//       handleNum = i.handleStr.slice(handle.length, 25);
-//       handleNum = parseInt(handleNum);
-//       if (handleNum > largestHandle) {
-//         largestHandle = handleNum;
-//       }
-//     }
-//   }
-//   if (largestHandle === -1 && isNaN(handleNum)) {
-//     largestHandle = '0';
-//   } else if (largestHandle > -1) {
-//     largestHandle++;
-//     largestHandle = largestHandle.toString();
-//   } else {
-//     largestHandle = '';
-//   }
-//   handle = handle + largestHandle;
-//   return handle;
-// }
+  const data = getData();
+  if (!data.users.find(user => user.handle === handle)) {
+    return handle;
+  }
 
-export { authLoginV1, authRegisterV1 };
+  let i = 0;
+  while (data.users.find(user => user.handle === handle + i) !== undefined) {
+    i++;
+  }
+
+  return handle + i;
+}
+
+function initUserStats(): Stats {
+  const numChannelsJoined = 0;
+  const numDmsJoined = 0;
+  const numMessagesSent = 0;
+  const timeStamp = Math.floor((new Date()).getTime() / 1000);
+
+  return {
+    channelsJoined: [{ numChannelsJoined, timeStamp }],
+    dmsJoined: [{ numDmsJoined, timeStamp }],
+    messagesSent: [{ numMessagesSent, timeStamp }],
+  };
+}

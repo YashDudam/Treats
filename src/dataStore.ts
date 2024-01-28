@@ -16,7 +16,7 @@ export type MessageSent = {
   timeStamp: number;
 };
 
-export type UserStats = {
+export type Stats = {
   channelsJoined: ChannelJoined[];
   dmsJoined: DmJoined[];
   messagesSent: MessageSent[];
@@ -30,7 +30,7 @@ export type User = {
   email: string;
   password: string;
   permission: number;
-  stats: UserStats;
+  stats: Stats;
 };
 
 export type Member = {
