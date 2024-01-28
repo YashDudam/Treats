@@ -14,6 +14,15 @@ type AuthUserIdWrapper = {
   authUserId: number
 };
 
+/*
+ * registers a user in the database
+ *    @param email      valid email
+ *    @param password   must be greater than 6 characters
+ *    @param nameFirst  must be between 1 and 50 characters inclusive
+ *    @param nameLast   must be between 1 and 50 characters inclusive
+ *    @returns
+ *        { token, authUserId }
+*/
 export function authRegisterV3(email: string, password: string, nameFirst: string, nameLast: string): AuthUserIdWrapper | Error {
   if (!validator.isEmail(email)) return { error: 'invalid email' };
   if (password.length < 6) return { error: 'password is too short' };
@@ -22,13 +31,7 @@ export function authRegisterV3(email: string, password: string, nameFirst: strin
 
   const data = getData();
 
-  // if (data.users.find(user => user.email === email)) return { error: 'email already in use' };
-  console.log(data);
-  for (const user of data.users) {
-    if (user.email === email) {
-      return { error: 'email already in use' };
-    }
-  }
+  if (data.users.find(user => user.email === email)) return { error: 'email already in use' };
 
   const authUserId = data.users.length + 1;
   const user = {
@@ -44,7 +47,6 @@ export function authRegisterV3(email: string, password: string, nameFirst: strin
   const token = objectHash(user);
 
   data.users.push(user);
-  console.log(data);
 
   setData(data);
 
