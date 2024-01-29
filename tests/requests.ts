@@ -15,7 +15,7 @@ export function requestClear() {
 }
 
 // calls the /auth/login/v3 api endpoint
-export function requestAuthLogin(email: string, password: string) {
+export function requestAuthLogin(email: string, password: string): TestRequest {
   const res = request(
     'POST',
     SERVER_URL + '/auth/login/v3',

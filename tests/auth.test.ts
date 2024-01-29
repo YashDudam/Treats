@@ -1,4 +1,56 @@
-import { requestAuthRegister, requestClear } from './requests';
+import { requestAuthLogin, requestAuthRegister, requestClear } from './requests';
+
+describe('auth/login/v3', () => {
+  beforeEach(() => {
+    requestClear();
+  });
+  afterEach(() => {
+    requestClear();
+  });
+
+  test('correct email and password', () => {
+    requestAuthRegister('darth.vader@gmail.com', 'bigmanvad3r', 'darth', 'vader');
+    const res = requestAuthLogin('darth.vader@gmail.com', 'bigmanvad3r');
+    expect(res.body).toStrictEqual({
+      token: expect.any(String),
+      authUserId: expect.any(Number)
+    });
+    expect(res.status).toBe(200);
+  });
+
+  test('two users with different emails but same passwords', () => {
+    requestAuthRegister('darth.vader@gmail.com', 'bigmanvad3r', 'darth', 'vader');
+    requestAuthRegister('anakin.skywalker@gmail.com', 'bigmanvad3r', 'anakin', 'vader');
+
+    const vader = requestAuthLogin('darth.vader@gmail.com', 'bigmanvad3r');
+    expect(vader.body).toStrictEqual({
+      token: expect.any(String),
+      authUserId: expect.any(Number)
+    });
+    expect(vader.status).toBe(200);
+
+    const anakin = requestAuthLogin('anakin.skywalker@gmail.com', 'bigmanvad3r');
+    expect(anakin.body).toStrictEqual({
+      token: expect.any(String),
+      authUserId: expect.any(Number)
+    });
+    expect(anakin.status).toBe(200);
+  });
+
+  test('email doesn\'t belong to a user', () => {
+    requestAuthRegister('darth.vader@gmail.com', 'bigmanvad3r', 'darth', 'vader');
+    const res = requestAuthLogin('anakin.skywalker@gmail.com', 'bigmanvad3r');
+    expect(res.body).toStrictEqual({ error: 'email does not belong to a user' });
+    expect(res.status).toBe(400);
+  });
+
+  test('incorrect password', () => {
+    requestAuthRegister('darth.vader@gmail.com', 'bigmanvad3r', 'darth', 'vader');
+    const res = requestAuthLogin('anakin.skywalker@gmail.com', 'bigmandarth');
+    expect(res.body).toStrictEqual({ error: 'incorrect password' });
+    expect(res.status).toBe(400);
+  });
+});
 
 describe('auth/register/v3', () => {
   beforeEach(() => {
