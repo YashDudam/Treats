@@ -15,6 +15,10 @@ type AuthUserIdWrapper = {
   authUserId: number
 };
 
+export function authLoginV3(email: string, password): AuthUserIdWrapper | Error {
+  return { error: 'no implementation yet' };
+}
+
 /*
  * registers a user in the database
  *    @param email      valid email

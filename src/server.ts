@@ -5,7 +5,7 @@ import config from './config.json';
 import cors from 'cors';
 import { dmCreateV1, dmDetailsV1, dmLeaveV1, dmListV1, dmMessagesV1, dmRemoveV1 } from './dm';
 import { validateToken, tokenToUId, throwError } from './other';
-import { authRegisterV3 } from './auth';
+import { authLoginV3, authRegisterV3 } from './auth';
 import {
   userProfileV2, usersViewAllV1, userSetNameV1,
   userSetEmailV1, userSetHandleStrV1, userStatsV1
@@ -45,25 +45,20 @@ app.get('/echo', (req, res, next) => {
   }
 });
 
-// ITERATION 2 functions (updated)
-// Auth
-// app.post('/auth/login/v3', (req, res, next) => {
-//   try {
-//     const { email, password } = req.body;
-//     const id = authLoginV1(email, password);
-//
-//     if ('error' in id) throw HTTPError(400, 'Invalid email or password');
-//
-//     // Add token to header
-//     res.set('token', id.token);
-//     return res.json({
-//       token: id.token,
-//       authUserId: id.authUserId
-//     });
-//   } catch (err) {
-//     next(err);
-//   }
-// });
+app.post('/auth/login/v3', (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    const id = authLoginV3(email, password);
+
+    if ('error' in id) {
+      throw HTTPError(400, id.error);
+    }
+
+    return res.json(id);
+  } catch (err) {
+    next(err);
+  }
+});
 
 app.post('/auth/register/v3', (req, res, next) => {
   try {
