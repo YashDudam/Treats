@@ -40,14 +40,22 @@ describe('auth/login/v3', () => {
   test('email doesn\'t belong to a user', () => {
     requestAuthRegister('darth.vader@gmail.com', 'bigmanvad3r', 'darth', 'vader');
     const res = requestAuthLogin('anakin.skywalker@gmail.com', 'bigmanvad3r');
-    expect(res.body).toStrictEqual({ error: 'email does not belong to a user' });
+    expect(res.body).toStrictEqual({
+      error: {
+        message: 'email does not belong to a user'
+      }
+    });
     expect(res.status).toBe(400);
   });
 
   test('incorrect password', () => {
     requestAuthRegister('darth.vader@gmail.com', 'bigmanvad3r', 'darth', 'vader');
-    const res = requestAuthLogin('anakin.skywalker@gmail.com', 'bigmandarth');
-    expect(res.body).toStrictEqual({ error: 'incorrect password' });
+    const res = requestAuthLogin('darth.vader@gmail.com', 'bigmandarth');
+    expect(res.body).toStrictEqual({
+      error: {
+        message: 'incorrect password'
+      }
+    });
     expect(res.status).toBe(400);
   });
 });

@@ -15,11 +15,35 @@ type AuthUserIdWrapper = {
   authUserId: number
 };
 
+/**
+ * logins to a registered user
+ *    @param email
+ *    @param password
+ *  @returns
+ *    email doesn't belong to user  { error }
+ *    password is incorrect         { error }
+ *    on success                    { token, authUserId }
+ **/
 export function authLoginV3(email: string, password): AuthUserIdWrapper | Error {
-  return { error: 'no implementation yet' };
+  const data = getData();
+
+  const user = data.users.find(user => user.email === email);
+
+  if (user === undefined) {
+    return { error: 'email does not belong to a user' };
+  }
+
+  if (user.password !== password) {
+    return { error: 'incorrect password' };
+  }
+
+  return {
+    token: generateToken(),
+    authUserId: user.id
+  };
 }
 
-/*
+/**
  * registers a user in the database
  *    @param email      valid email
  *    @param password   must be greater than 6 characters
@@ -27,7 +51,7 @@ export function authLoginV3(email: string, password): AuthUserIdWrapper | Error 
  *    @param nameLast   must be between 1 and 50 characters inclusive
  *    @returns
  *        { token, authUserId }
-*/
+ **/
 export function authRegisterV3(email: string, password: string, nameFirst: string, nameLast: string): AuthUserIdWrapper | Error {
   if (!validator.isEmail(email)) return { error: 'invalid email' };
   if (password.length < 6) return { error: 'password is too short' };
