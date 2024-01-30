@@ -24,7 +24,7 @@ type AuthUserIdWrapper = {
  *    password is incorrect         { error }
  *    on success                    { token, authUserId }
  **/
-export function authLoginV3(email: string, password): AuthUserIdWrapper | Error {
+export function authLoginV3(email: string, password: string): AuthUserIdWrapper | Error {
   const data = getData();
 
   const user = data.users.find(user => user.email === email);
@@ -115,4 +115,8 @@ function initUserStats(): Stats {
     dmsJoined: [{ numDmsJoined, timeStamp }],
     messagesSent: [{ numMessagesSent, timeStamp }],
   };
+}
+
+export function authLogoutV2(token: string) {
+  return {};
 }

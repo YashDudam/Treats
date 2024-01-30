@@ -5,7 +5,7 @@ import config from './config.json';
 import cors from 'cors';
 import { dmCreateV1, dmDetailsV1, dmLeaveV1, dmListV1, dmMessagesV1, dmRemoveV1 } from './dm';
 import { validateToken, tokenToUId, throwError } from './other';
-import { authLoginV3, authRegisterV3 } from './auth';
+import { authLoginV3, authLogoutV2, authRegisterV3 } from './auth';
 import {
   userProfileV2, usersViewAllV1, userSetNameV1,
   userSetEmailV1, userSetHandleStrV1, userStatsV1
@@ -78,14 +78,7 @@ app.post('/auth/register/v3', (req, res, next) => {
 app.post('/auth/logout/v2', (req, res, next) => {
   try {
     const token = req.header('token');
-    if (!validateToken(token)) throw HTTPError(403, 'Invalid token');
-
-    // Find and remove token
-    const data = getData();
-    const tokenIndex = data.tokens.findIndex((tokenObj: Token) => tokenObj.token === hash(token));
-    data.tokens.splice(tokenIndex, 1);
-
-    setData(data);
+    authLogoutV2(token);
     return res.json({});
   } catch (err) {
     next(err);
