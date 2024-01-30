@@ -5,7 +5,7 @@ import config from './../src/config.json';
 const SERVER_URL = `${config.url}:${config.port}`;
 
 type TestRequest = {
-  body: object,
+  body: any,
   status: number
 }
 
@@ -52,10 +52,15 @@ export function requestAuthRegister(email: string, password: string, nameFirst: 
   };
 }
 
-export function requestAuthLogout(): TestRequest {
+export function requestAuthLogout(token: string): TestRequest {
   const res = request(
     'POST',
-    SERVER_URL + '/auth/logout/v2'
+    SERVER_URL + '/auth/logout/v2',
+    {
+      headers: {
+        token: token
+      }
+    }
   );
 
   return {

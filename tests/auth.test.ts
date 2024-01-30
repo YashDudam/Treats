@@ -1,4 +1,4 @@
-import { requestAuthLogin, requestAuthRegister, requestClear } from './requests';
+import { requestAuthLogin, requestAuthLogout, requestAuthRegister, requestClear } from './requests';
 
 describe('auth/login/v3', () => {
   beforeEach(() => {
@@ -131,5 +131,22 @@ describe('auth/register/v3', () => {
   test('length of nameLast is larger than 50 characters', () => {
     const res = requestAuthRegister('anakin.skywalker@gmail.com', 'dfalksdjfj', 'anakin', 'anakinthisnameisfartoolongwhatareyouthinkingbrowecannothandlethislength');
     expect(res.status).toBe(400);
+  });
+});
+
+describe('auth/login/v2', () => {
+  beforeEach(() => {
+    requestClear();
+  });
+  afterEach(() => {
+    requestClear();
+  });
+
+  test('success case', () => {
+    requestAuthRegister('anakin.skywalker@gmail.com', 'jediknightftw', 'anakin', 'skywalker');
+    const token = requestAuthLogin('anakin.skywalker@gmail.com', 'jediknightftw');
+    const res = requestAuthLogout(token.body.token);
+    expect(res.body).toStrictEqual({});
+    expect(res.status).toBe(200);
   });
 });
