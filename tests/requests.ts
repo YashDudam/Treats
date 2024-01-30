@@ -51,3 +51,15 @@ export function requestAuthRegister(email: string, password: string, nameFirst: 
     status: res.statusCode
   };
 }
+
+export function requestAuthLogout(): TestRequest {
+  const res = request(
+    'POST',
+    SERVER_URL + '/auth/logout/v2'
+  );
+
+  return {
+    body: JSON.parse(String(res.body)),
+    status: res.statusCode
+  };
+}
