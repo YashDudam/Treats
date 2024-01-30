@@ -118,5 +118,8 @@ function initUserStats(): Stats {
 }
 
 export function authLogoutV2(token: string) {
+  const data = getData();
+  data.tokens = data.tokens.filter(tok => tok.token !== token);
+  setData(data);
   return {};
 }
